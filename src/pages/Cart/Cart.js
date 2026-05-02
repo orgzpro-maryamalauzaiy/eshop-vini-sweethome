@@ -1,17 +1,25 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import Breadcrumbs from "../../components/pageProps/Breadcrumbs";
-import { resetCart } from "../../redux/orebiSlice";
+import { resetCart } from "../../redux/ecommSlice";
 import { emptyCart } from "../../assets/images/index";
 import ItemCard from "./ItemCard";
+import { toast } from "react-toastify";
+import axios from "axios";
+
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.REACT_APP_PROD_URL
 
 const Cart = () => {
   const dispatch = useDispatch();
-  const products = useSelector((state) => state.orebiReducer.products);
+  const navigate = useNavigate()
+  // const {products} = useSelector((state) => state.ecommReducer);
+  const [products, setProducts] = useState([])
   const [totalAmt, setTotalAmt] = useState("");
-  const [shippingCharge, setShippingCharge] = useState("");
+  const [shippingCharge, setShippingCharge] = useState(0);
+
   useEffect(() => {
     let price = 0;
     products.map((item) => {
@@ -19,16 +27,68 @@ const Cart = () => {
       return price;
     });
     setTotalAmt(price);
-  }, [products]);
-  useEffect(() => {
-    if (totalAmt <= 200) {
-      setShippingCharge(30);
-    } else if (totalAmt <= 400) {
-      setShippingCharge(25);
-    } else if (totalAmt > 401) {
-      setShippingCharge(20);
+    if(products.length === 0){
+      getCart()
     }
-  }, [totalAmt]);
+    console.log('products', products)
+  }, [products]);
+
+
+  const getCart = async () => {
+    try {
+      await axios.get(`${BASE_URL}cart`, {withCredentials: true})
+                .then(result => {
+                  console.log('result', result)
+                  if(result.status === 200){
+                    setProducts(result.data.data)
+                  }
+                })
+
+    } catch (error) {
+      toast.error('Error, Error get cart items')
+    }
+  }
+
+  // useEffect(() => {
+  //   if (totalAmt <= 200) {
+  //     setShippingCharge(0);
+  //     // 30
+  //   } else if (totalAmt <= 400) {
+  //     setShippingCharge(0);
+  //     // 25
+  //   } else if (totalAmt > 401) {
+  //     setShippingCharge(0);
+  //     // 20
+  //   }
+  // }, [totalAmt]);
+
+  const createInvoice = async () => {
+    console.log('products', products)
+    try {
+      await axios.post(`${BASE_URL}payments/request-invoices`, {product_id: products[0].id, amount: products[0].amount, price: products[0].price, admin_fee: products[0].admin_fee, discount: products[0].discount, promo_code: products[0].promo_code}, {withCredentials: true})
+                  .then(result => {
+                    console.log('result', result)
+                    if(result.status === 200){
+                      navigate(result.data.data.redirect_url)
+                    }
+                  })
+                  .catch(error => {
+                    toast.error('Failed, Failed request invoice')
+                  })
+
+    } catch (error) {
+      toast.error('Failed, Failed request invoice: ' + error)
+    }
+  }
+
+  const formatCurrency = (amount: number) => {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+      }).format(amount);
+    };
+
   return (
     <div className="max-w-container mx-auto px-4">
       <Breadcrumbs title="Cart" />
@@ -75,28 +135,36 @@ const Cart = () => {
                 <p className="flex items-center justify-between border-[1px] border-gray-400 border-b-0 py-1.5 text-lg px-4 font-medium">
                   Subtotal
                   <span className="font-semibold tracking-wide font-titleFont">
-                    ${totalAmt}
+                    {formatCurrency(totalAmt)}
                   </span>
                 </p>
-                <p className="flex items-center justify-between border-[1px] border-gray-400 border-b-0 py-1.5 text-lg px-4 font-medium">
+                {/* <p className="flex items-center justify-between border-[1px] border-gray-400 border-b-0 py-1.5 text-lg px-4 font-medium">
                   Shipping Charge
                   <span className="font-semibold tracking-wide font-titleFont">
-                    ${shippingCharge}
+                    {formatCurrency(shippingCharge)}
+                  </span>
+                </p> */}
+                <p className="flex items-center justify-between border-[1px] border-gray-400 border-b-0 py-1.5 text-lg px-4 font-medium">
+                  Admin Fee
+                  <span className="font-semibold tracking-wide font-titleFont">
+                    {formatCurrency(shippingCharge)}
                   </span>
                 </p>
                 <p className="flex items-center justify-between border-[1px] border-gray-400 py-1.5 text-lg px-4 font-medium">
                   Total
                   <span className="font-bold tracking-wide text-lg font-titleFont">
-                    ${totalAmt + shippingCharge}
+                    {formatCurrency(totalAmt + shippingCharge)}
                   </span>
                 </p>
               </div>
               <div className="flex justify-end">
-                <Link to="/paymentgateway">
-                  <button className="w-52 h-10 bg-primeColor text-white hover:bg-black duration-300">
+                {/* <Link to="/paymentgateway"> */}
+                  <button className="w-52 h-10 bg-primeColor text-white hover:bg-black duration-300"
+                  onClick={createInvoice}
+                  >
                     Proceed to Checkout
                   </button>
-                </Link>
+                {/* </Link> */}
               </div>
             </div>
           </div>

@@ -4,13 +4,13 @@ import Category from "./shopBy/Category";
 import Color from "./shopBy/Color";
 import Price from "./shopBy/Price";
 
-const ShopSideNav = () => {
+const ShopSideNav = ({getFilters}) => {
   return (
     <div className="w-full flex flex-col gap-6">
-      <Category icons={false} />
-      <Color />
-      <Brand />
-      <Price />
+      <Category icons={false} getFilters={getFilters} />
+      <Color getFilter={getFilters} />
+      <Brand getFilters={getFilters} />
+      <Price getFilters={getFilters} />
     </div>
   );
 };

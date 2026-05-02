@@ -6,7 +6,7 @@ const Journal = () => {
   const location = useLocation();
   const [prevLocation, setPrevLocation] = useState("");
   useEffect(() => {
-    setPrevLocation(location.state.data);
+    // setPrevLocation(location.state.data);
   }, [location]);
   return (
     <div className="max-w-container mx-auto px-4">

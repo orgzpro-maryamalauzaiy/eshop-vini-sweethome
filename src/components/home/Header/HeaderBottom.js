@@ -6,9 +6,15 @@ import Flex from "../../designLayouts/Flex";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { paginationItems } from "../../../constants";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { formatCurrency } from "../../../utils/formatCurrency";
+
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.VITE_PROD_URL
 
 const HeaderBottom = () => {
-  const products = useSelector((state) => state.orebiReducer.products);
+  const products = useSelector((state) => state.ecommReducer.products);
+  const [items, setItems] = useState([])
   const [show, setShow] = useState(false);
   const [showUser, setShowUser] = useState(false);
   const navigate = useNavigate();
@@ -31,11 +37,42 @@ const HeaderBottom = () => {
   };
 
   useEffect(() => {
-    const filtered = paginationItems.filter((item) =>
+    getExistingProduct()
+    const filtered = items.filter((item) =>
       item.productName.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredProducts(filtered);
+    if(searchQuery){
+      console.log('searchQuery', searchQuery)
+    }
   }, [searchQuery]);
+
+  const getExistingProduct = async () => {
+    try {
+      await axios.get(`${BASE_URL}products${searchQuery?`?keyword=${searchQuery}`:""}`)
+                  .then(result => {
+                    console.log('result from sear', result)
+                    if(result.status === 200){
+                      setItems(result.data.data.map(item => {return {
+                          _id: item.id,
+                          img: item.image,
+                          productName: item.name,
+                          price: item.price,
+                          color: item.colors,
+                          badge: false,
+                          des: item.description
+                        }}))
+                      }
+                    }
+                  )
+                  .catch(error => {
+                    toast.error('Failed, Failed when get existing products')
+                  })
+
+    } catch (error) {
+      toast.error('Failed, Failed when get existing products: ' + error)
+    }
+  }
 
   return (
     <div className="w-full bg-[#F5F5F3] relative">
@@ -83,7 +120,7 @@ const HeaderBottom = () => {
               type="text"
               onChange={handleSearch}
               value={searchQuery}
-              placeholder="Search your products here"
+              placeholder="Cari produk"
             />
             <FaSearch className="w-5 h-5" />
             {searchQuery && (
@@ -118,7 +155,7 @@ const HeaderBottom = () => {
                         <p className="text-sm">
                           Price:{" "}
                           <span className="text-primeColor font-semibold">
-                            ${item.price}
+                            {formatCurrency(item.price)}
                           </span>
                         </p>
                       </div>
@@ -139,14 +176,14 @@ const HeaderBottom = () => {
                 transition={{ duration: 0.5 }}
                 className="absolute top-6 left-0 z-50 bg-primeColor w-44 text-[#767676] h-auto p-4 pb-6"
               >
-                <Link to="/signin">
+                <Link to="/login">
                   <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
                     Login
                   </li>
                 </Link>
                 <Link onClick={() => setShowUser(false)} to="/signup">
                   <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                    Sign Up
+                    Daftar
                   </li>
                 </Link>
                 <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
@@ -161,7 +198,7 @@ const HeaderBottom = () => {
               <div className="relative">
                 <FaShoppingCart />
                 <span className="absolute font-titleFont top-3 -right-2 text-xs w-4 h-4 flex items-center justify-center rounded-full bg-primeColor text-white">
-                  {products.length > 0 ? products.length : 0}
+                  {products && products.length > 0 ? products.length : 0}
                 </span>
               </div>
             </Link>

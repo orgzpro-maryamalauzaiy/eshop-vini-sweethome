@@ -1,7 +1,7 @@
 import React from "react";
 import NavTitle from "./NavTitle";
 
-const Price = () => {
+const Price = ({filters}) => {
   const priceList = [
     {
       _id: 950,
@@ -34,6 +34,10 @@ const Price = () => {
       priceTwo: 1000.0,
     },
   ];
+
+  const handleFilterPrice = () => {
+
+  }
   return (
     <div className="cursor-pointer">
       <NavTitle title="Shop by Price" icons={false} />
@@ -43,6 +47,7 @@ const Price = () => {
             <li
               key={item._id}
               className="border-b-[1px] border-b-[#F0F0F0] pb-2 flex items-center gap-2 hover:text-primeColor hover:border-gray-400 duration-300"
+              onClick={() => handleFilterPrice(item._id)}
             >
               ${item.priceOne.toFixed(2)} - ${item.priceTwo.toFixed(2)}
             </li>

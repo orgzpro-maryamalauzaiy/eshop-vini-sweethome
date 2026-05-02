@@ -1,4 +1,5 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import Heading from "../Products/Heading";
 import Product from "../Products/Product";
 import {
@@ -7,22 +8,58 @@ import {
   bestSellerThree,
   bestSellerFour,
 } from "../../../assets/images/index";
+import axios from "axios";
+import { toast } from "react-toastify";
+
+const BASE_URL = process.env.REACT_APP_SERVER_MODE == 'development'? process.env.REACT_APP_DEV_URL : process.env.REACT_APP_PROD_URL
 
 const BestSellers = () => {
+
+  const [bestsellers, setBestSellers] = useState([])
+  // const [error_message, setErrorMessage] = useState("")
+
+  useEffect(() => {
+    getProductsBestSellers()
+    console.log(bestsellers)
+  }, [])
+
+  const getProductsBestSellers = async () => {
+    try {
+      await axios.get(`${BASE_URL}products/best-sellers`)
+                      .then((results) => {
+                        console.log('results', results)
+                        if(results.status == 200){
+                          setBestSellers(results.data.data)
+                        }
+                      })
+                      .catch((error) => {
+                        console.log(error)
+                        // setErrorMessage(error)
+                      })
+
+    } catch (error) {
+      toast.error('Server error when get product new arrivals')
+    }
+  }
+
   return (
     <div className="w-full pb-20">
       <Heading heading="Our Bestsellers" />
       <div className="w-full grid grid-cols-1 md:grid-cols-2 lgl:grid-cols-3 xl:grid-cols-4 gap-10">
-        <Product
-          _id="1011"
-          img={bestSellerOne}
-          productName="Flower Base"
-          price="35.00"
-          color="Blank and White"
-          badge={true}
-          des="Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic excepturi quibusdam odio deleniti reprehenderit facilis."
-        />
-        <Product
+        {bestsellers && bestsellers.map(product => (
+          <Product
+            _id={product.id}
+            img={product.image}
+            productName={product.name}
+            price={product.price}
+            color={product.color}
+            badge={true}
+            des={product.description}
+          />
+
+        )
+        )}
+        {/* <Product
           _id="1012"
           img={bestSellerTwo}
           productName="New Backpack"
@@ -48,7 +85,7 @@ const BestSellers = () => {
           color="Black"
           badge={false}
           des="Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic excepturi quibusdam odio deleniti reprehenderit facilis."
-        />
+        /> */}
       </div>
     </div>
   );

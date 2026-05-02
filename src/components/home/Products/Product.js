@@ -7,7 +7,11 @@ import Image from "../../designLayouts/Image";
 import Badge from "./Badge";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../../../redux/orebiSlice";
+import { addToCart } from "../../../redux/ecommSlice";
+import { toast } from "react-toastify";
+import axios from "axios";
+
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.VITE_PROD_URL
 
 const Product = (props) => {
   const dispatch = useDispatch();
@@ -19,6 +23,7 @@ const Product = (props) => {
 
   const navigate = useNavigate();
   const productItem = props;
+
   const handleProductDetails = () => {
     navigate(`/product/${rootId}`, {
       state: {
@@ -26,6 +31,34 @@ const Product = (props) => {
       },
     });
   };
+
+  const handleAddToCart = async () => {
+    try {
+      await axios.post(`${BASE_URL}cart/add`, {product_id: productItem._id, price: productItem.price}, {withCredentials: true})
+                  .then(result => {
+                    console.log(result)
+                    if(result.status === 200){
+                      navigate('/cart')
+                    }
+                  })
+                  .catch(error => {
+                    console.log(error)
+                    toast.error('Failed, Failed add product to cart: ' + error)
+                  })
+
+    } catch (error) {
+      toast.error('Failed, Failed add product to cart: ' + error)
+    }
+  }
+
+  const formatCurrency = (amount: number) => {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+      }).format(amount);
+    };
+
   return (
     <div className="w-full relative group">
       <div className="max-w-80 max-h-80 relative overflow-y-hidden ">
@@ -37,25 +70,27 @@ const Product = (props) => {
         </div>
         <div className="w-full h-32 absolute bg-white -bottom-[130px] group-hover:bottom-0 duration-700">
           <ul className="w-full h-full flex flex-col items-end justify-center gap-2 font-titleFont px-2 border-l border-r">
-            <li className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full">
+            {/* <li className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full">
               Compare
               <span>
                 <GiReturnArrow />
               </span>
-            </li>
+            </li> */}
             <li
-              onClick={() =>
-                dispatch(
-                  addToCart({
-                    _id: props._id,
-                    name: props.productName,
-                    quantity: 1,
-                    image: props.img,
-                    badge: props.badge,
-                    price: props.price,
-                    colors: props.color,
-                  })
-                )
+              onClick={handleAddToCart
+                // () =>
+                // dispatch(
+                //   addToCart({
+                //     _id: props._id,
+                //     name: props.productName,
+                //     quantity: 1,
+                //     image: props.img,
+                //     badge: props.badge,
+                //     price: props.price,
+                //     colors: props.color,
+                //   })
+                // )
+
               }
               className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full"
             >
@@ -73,12 +108,12 @@ const Product = (props) => {
                 <MdOutlineLabelImportant />
               </span>
             </li>
-            <li className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full">
+            {/* <li className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full">
               Add to Wish List
               <span>
                 <BsSuitHeartFill />
               </span>
-            </li>
+            </li> */}
           </ul>
         </div>
       </div>
@@ -87,7 +122,7 @@ const Product = (props) => {
           <h2 className="text-lg text-primeColor font-bold">
             {props.productName}
           </h2>
-          <p className="text-[#767676] text-[14px]">${props.price}</p>
+          <p className="text-[#767676] text-[14px]">{formatCurrency(props.price)}</p>
         </div>
         <div>
           <p className="text-[#767676] text-[14px]">{props.color}</p>

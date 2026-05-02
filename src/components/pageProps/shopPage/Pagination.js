@@ -3,20 +3,21 @@ import ReactPaginate from "react-paginate";
 import Product from "../../home/Products/Product";
 import { paginationItems } from "../../../constants";
 import axios from 'axios'
+import { toast } from "react-toastify";
 
 const items = paginationItems;
-const BASE_URL = process.env.REACT_APP_SERVER_MODE === "development" 
-  ? process.env.REACT_APP_SERVER_LOCAL_URL 
-  : process.env.REACT_APP_SERVER_PROD_URL;
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === "development"
+  ? process.env.REACT_APP_DEV_URL
+  : process.env.REACT_APP_PROD_URL;
 
 function Items({ currentItems }) {
   return (
     <>
       {currentItems &&
         currentItems.map((item) => (
-          <div key={item._id} className="w-full">
+          <div key={item.id} className="w-full">
             <Product
-              _id={item._id}
+              _id={item.id}
               img={item.image}
               productName={item.name}
               price={item.price}
@@ -30,12 +31,13 @@ function Items({ currentItems }) {
   );
 }
 
-const Pagination = ({ itemsPerPage }) => {
+const Pagination = ({ itemsPerPage, filters }) => {
   // Here we use item offsets; we could also use page offsets
   // following the API or data you're working with.
   const [itemOffset, setItemOffset] = useState(0);
   const [itemStart, setItemStart] = useState(1);
   const [products, setProducts] = useState([])
+  const [filters_data, setFilterQuery] = useState('')
 
   // Simulate fetching items from another resources.
   // (This could be items from props; or items loaded in a local state
@@ -46,12 +48,23 @@ const Pagination = ({ itemsPerPage }) => {
     if(products.length == 0){
       getProducts()
     }
-    console.log('BASE_URL', BASE_URL, process.env.VITE_SERVER_LOCAL_URL)
-  }, products)
+    console.log('BASE_URL', BASE_URL, process.env.VITE_DEV_URL)
+    if(filters){
+      console.log('filters', filters)
+    }
+  }, [products, filters])
 
   const getProducts = async () => {
     try {
-      await axios.get(`${'http://localhost:3030'}/products`)
+      if(filters){
+        // filters.join('')
+        const keyword = Object.keys(filters).map(filter => Object.values(filters).map(value => {
+          filters_data.concat(filter + '=' + value + '&')
+        }))
+        console.log('filters_data', filters_data)
+        // Object.values(filters)
+      }
+      await axios.get(`${BASE_URL}products` + '?' + filters_data)
                   .then(result => {
                     if(result.status == 200){
                       setProducts(result.data.data)

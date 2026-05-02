@@ -3,10 +3,13 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { MdClose } from "react-icons/md";
 import { HiMenuAlt2 } from "react-icons/hi";
 import { motion } from "framer-motion";
-import { logo, logoLight } from "../../../assets/images";
+import { logo, logoLight, eshopViniLogo } from "../../../assets/images";
 import Image from "../../designLayouts/Image";
 import { navBarList } from "../../../constants";
 import Flex from "../../designLayouts/Flex";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { BASE_URL } from "../../../server/api";
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(true);
@@ -24,7 +27,27 @@ const Header = () => {
     };
     ResponsiveMenu();
     window.addEventListener("resize", ResponsiveMenu);
+
+    getCategories()
   }, []);
+
+  const getCategories = async () => {
+    try {
+      await axios.get(`${BASE_URL}categories`)
+                  .then(result => {
+                    console.log(result)
+                    if(result.status === 200){
+                      setCategory(result.data.data)
+                    }
+                  })
+                  .catch(error => {
+                    toast.error('Failed', 'Failed when get Categories')
+                  })
+
+    } catch (error) {
+      toast.error('Failed', 'Error when get Categories: ' + error)
+    }
+  }
 
   return (
     <div className="w-full h-20 bg-white sticky top-0 z-50 border-b-[1px] border-b-gray-200">
@@ -32,7 +55,7 @@ const Header = () => {
         <Flex className="flex items-center justify-between h-full">
           <Link to="/">
             <div>
-              <Image className="w-20 object-cover" imgSrc={logo} />
+              <Image className="w-10 object-cover" imgSrc={eshopViniLogo} />
             </div>
           </Link>
           <div>
@@ -72,8 +95,8 @@ const Header = () => {
                   <div className="w-full h-full bg-primeColor p-6">
                     <img
                       className="w-28 mb-6"
-                      src={logoLight}
-                      alt="logoLight"
+                      src={eshopViniLogo}
+                      alt="sweethome logo"
                     />
                     <ul className="text-gray-200 flex flex-col gap-2">
                       {navBarList.map((item) => (
@@ -106,11 +129,15 @@ const Header = () => {
                           transition={{ duration: 0.4 }}
                           className="text-sm flex flex-col gap-1"
                         >
-                          <li className="headerSedenavLi">New Arrivals</li>
-                          <li className="headerSedenavLi">Gudgets</li>
+                          {category.map(item => (
+                            <li className="headerSedenavLi">{item.name} </li>
+
+                          ))}
+                          {/* <li className="headerSedenavLi">Gudgets</li>
                           <li className="headerSedenavLi">Accessories</li>
-                          <li className="headerSedenavLi">Electronics</li>
-                          <li className="headerSedenavLi">Others</li>
+                          <li className="headerSedenavLi">Electronics</li> */}
+                          <li className="headerSedenavLi">Lainnya</li>
+                          {/* <li className="headerSedenavLi">Others</li> */}
                         </motion.ul>
                       )}
                     </div>
@@ -129,11 +156,16 @@ const Header = () => {
                           transition={{ duration: 0.4 }}
                           className="text-sm flex flex-col gap-1"
                         >
-                          <li className="headerSedenavLi">New Arrivals</li>
-                          <li className="headerSedenavLi">Gudgets</li>
+                          {brand.map(item => (
+                            <li className="headerSedenavLi">{item.name} </li>
+                          )
+                          )}
+                          {/* <li className="headerSedenavLi">New Arrivals</li> */}
+                          {/* <li className="headerSedenavLi">Gudgets</li>
                           <li className="headerSedenavLi">Accessories</li>
-                          <li className="headerSedenavLi">Electronics</li>
-                          <li className="headerSedenavLi">Others</li>
+                          <li className="headerSedenavLi">Electronics</li> */}
+                          <li className="headerSedenavLi">Lainnya</li>
+                          {/* <li className="headerSedenavLi">Others</li> */}
                         </motion.ul>
                       )}
                     </div>

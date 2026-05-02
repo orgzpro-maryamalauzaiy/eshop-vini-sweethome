@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import NavTitle from "./NavTitle";
 
-const Color = () => {
+const Color = ({filters}) => {
   const [showColors, setShowColors] = useState(true);
   const colors = [
     {
@@ -32,6 +32,15 @@ const Color = () => {
     },
   ];
 
+  const handleFilterColors = (color) => {
+    if(color){
+      filters.color = color
+      
+      // getFilters({category: category})
+    }
+    // setShowSubCatOne(!showSubCatOne)
+  }
+
   return (
     <div>
       <div
@@ -55,8 +64,10 @@ const Color = () => {
                 <span
                   style={{ background: item.base }}
                   className={`w-3 h-3 bg-gray-500 rounded-full`}
-                ></span>
+                  onClick={() => handleFilterColors(item.base)}
+                >
                 {item.title}
+                </span>
               </li>
             ))}
           </ul>

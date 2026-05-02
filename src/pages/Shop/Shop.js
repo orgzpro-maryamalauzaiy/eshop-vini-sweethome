@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Breadcrumbs from "../../components/pageProps/Breadcrumbs";
 import Pagination from "../../components/pageProps/shopPage/Pagination";
 import ProductBanner from "../../components/pageProps/shopPage/ProductBanner";
@@ -9,6 +9,23 @@ const Shop = () => {
   const itemsPerPageFromBanner = (itemsPerPage) => {
     setItemsPerPage(itemsPerPage);
   };
+  const [filters, setFilters] = useState({
+    color: "",
+    brand: "",
+    range_price: ""
+  })
+
+  useEffect(() => {
+    console.log('filters', filters)
+
+  }, [filters])
+
+  const getFilters = async (filters) => {
+    if(filters){
+      console.log('filters from shop', filters)
+      setFilters(filters)
+    }
+  }
 
   return (
     <div className="max-w-container mx-auto px-4">
@@ -16,13 +33,13 @@ const Shop = () => {
       {/* ================= Products Start here =================== */}
       <div className="w-full h-full flex pb-20 gap-10">
         <div className="w-[20%] lgl:w-[25%] hidden mdl:inline-flex h-full">
-          <ShopSideNav />
+          <ShopSideNav getFilters={getFilters} getFilters={getFilters} />
         </div>
         <div className="w-full mdl:w-[80%] lgl:w-[75%] h-full flex flex-col gap-10">
           <ProductBanner itemsPerPageFromBanner={itemsPerPageFromBanner} />
-          <Pagination itemsPerPage={itemsPerPage} />
+          <Pagination itemsPerPage={itemsPerPage} filters={filters} />
         </div>
-      </div>
+    </div>
       {/* ================= Products End here ===================== */}
     </div>
   );

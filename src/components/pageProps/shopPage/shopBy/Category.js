@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { ImPlus } from "react-icons/im";
 import NavTitle from "./NavTitle";
 
-const Category = () => {
+const Category = ({filters}) => {
   const [showSubCatOne, setShowSubCatOne] = useState(false);
   const items = [
     {
@@ -29,6 +29,14 @@ const Category = () => {
       title: "Others",
     },
   ];
+
+  const handleFilterCategory = (category) => {
+    if(category){
+      filters.category = category
+      // getFilters({category: category})
+    }
+    setShowSubCatOne(!showSubCatOne)
+  }
   return (
     <div className="w-full">
       <NavTitle title="Shop by Category" icons={false} />
@@ -42,7 +50,7 @@ const Category = () => {
               {title}
               {icons && (
                 <span
-                  onClick={() => setShowSubCatOne(!showSubCatOne)}
+                  onClick={() => handleFilterCategory(_id)}
                   className="text-[10px] lg:text-xs cursor-pointer text-gray-400 hover:text-primeColor duration-300"
                 >
                   <ImPlus />

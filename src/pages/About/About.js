@@ -6,16 +6,18 @@ const About = () => {
   const location = useLocation();
   const [prevLocation, setPrevLocation] = useState("");
   useEffect(() => {
-    setPrevLocation(location.state.data);
+    // setPrevLocation(location.pathname);
+    // setPrevLocation(location.state.data);
+    console.log('location.state', location.state)
   }, [location]);
   return (
     <div className="max-w-container mx-auto px-4">
       <Breadcrumbs title="About" prevLocation={prevLocation} />
       <div className="pb-10">
         <h1 className="max-w-[600px] text-base text-lightText mb-2">
-          <span className="text-primeColor font-semibold text-lg">Orebi</span>{" "}
+          <span className="text-primeColor font-semibold text-lg">SweetHome</span>{" "}
           is one of the world's leading ecommerce brands and is internationally
-          recognized for celebrating the essence of classic Worldwide cool
+          recognized for celebrating the essence of classic Worldwide muslimah fashion
           looking style.
         </h1>
         <Link to="/shop">

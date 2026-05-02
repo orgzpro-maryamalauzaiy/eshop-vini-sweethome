@@ -1,5 +1,9 @@
+import eshopViniLogo from "./eshopViniLogo.png";
 import logo from "./orebiLogo.png";
 import logoLight from "./logoLight.png";
+import newProductBanner1 from "./banner/newProductBanner1.png";
+import newProductBanner2 from "./banner/newProductBanner2.png";
+import promoProductBanner1 from "./banner/bannerImgThree.webp";
 import bannerImgOne from "./banner/bannerImgOne.webp";
 import bannerImgTwo from "./banner/bannerImgTwo.webp";
 import bannerImgThree from "./banner/bannerImgThree.webp";
@@ -32,8 +36,11 @@ import paymentCard from "./payment.png";
 import emptyCart from "./emptyCart.png";
 
 export {
+  eshopViniLogo,
   logo,
   logoLight,
+  newProductBanner1,
+  newProductBanner2,
   bannerImgOne,
   bannerImgTwo,
   bannerImgThree,

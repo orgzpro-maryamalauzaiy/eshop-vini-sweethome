@@ -1,24 +1,30 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { logoLight } from "../../assets/images";
+import axios from "axios";
+
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.VITE_PROD_URL
 
 const SignUp = () => {
   // ============= Initial State Start here =============
   const [clientName, setClientName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone_number, setPhone_number] = useState("");
   const [password, setPassword] = useState("");
   const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
+  const [city_id, setCity] = useState("12345678");
   const [country, setCountry] = useState("");
   const [zip, setZip] = useState("");
   const [checked, setChecked] = useState(false);
+
+  const [cities, setCities] = useState([]);
   // ============= Initial State End here ===============
   // ============= Error Msg Start here =================
   const [errClientName, setErrClientName] = useState("");
   const [errEmail, setErrEmail] = useState("");
-  const [errPhone, setErrPhone] = useState("");
+  const [errPhone_number, setErrPhone_number] = useState("");
   const [errPassword, setErrPassword] = useState("");
   const [errAddress, setErrAddress] = useState("");
   const [errCity, setErrCity] = useState("");
@@ -26,7 +32,10 @@ const SignUp = () => {
   const [errZip, setErrZip] = useState("");
   // ============= Error Msg End here ===================
   const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrMsg] = useState("");
   // ============= Event Handler Start here =============
+  const navigate = useNavigate()
+
   const handleName = (e) => {
     setClientName(e.target.value);
     setErrClientName("");
@@ -35,9 +44,10 @@ const SignUp = () => {
     setEmail(e.target.value);
     setErrEmail("");
   };
-  const handlePhone = (e) => {
-    setPhone(e.target.value);
-    setErrPhone("");
+  const handlePhone_number = (value) => {
+    console.log('phone_number', value)
+    setPhone_number(value);
+    setErrPhone_number("");
   };
   const handlePassword = (e) => {
     setPassword(e.target.value);
@@ -68,64 +78,86 @@ const SignUp = () => {
   };
   // ================= Email Validation End here ===============
 
-  const handleSignUp = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     if (checked) {
       if (!clientName) {
-        setErrClientName("Enter your name");
+        setErrClientName("Nama wajib diisi");
       }
       if (!email) {
-        setErrEmail("Enter your email");
+        setErrEmail("Email wajib diisi");
       } else {
         if (!EmailValidation(email)) {
-          setErrEmail("Enter a Valid email");
+          setErrEmail("Email tidak valid");
         }
       }
-      if (!phone) {
-        setErrPhone("Enter your phone number");
+      if (!phone_number) {
+        setErrPhone_number("No. Hp wajib diisi");
       }
       if (!password) {
-        setErrPassword("Create a password");
+        setErrPassword("Password wajib diisi");
       } else {
         if (password.length < 6) {
-          setErrPassword("Passwords must be at least 6 characters");
+          setErrPassword("Password minimal 6 karakter");
         }
       }
       if (!address) {
-        setErrAddress("Enter your address");
+        setErrAddress("Alamat wajib diisi");
       }
-      if (!city) {
-        setErrCity("Enter your city name");
+      if (!city_id) {
+        setErrCity("Kota wajib diisi");
       }
       if (!country) {
-        setErrCountry("Enter the country you are residing");
+        setErrCountry("Negara wajib diisi");
       }
       if (!zip) {
-        setErrZip("Enter the zip code of your area");
+        setErrZip("Kode pos wajib diisi");
       }
       // ============== Getting the value ==============
       if (
         clientName &&
         email &&
         EmailValidation(email) &&
+        phone_number &&
         password &&
         password.length >= 6 &&
         address &&
-        city &&
+        city_id &&
         country &&
         zip
       ) {
-        setSuccessMsg(
-          `Hello dear ${clientName}, Welcome you to OREBI Admin panel. We received your Sign up request. We are processing to validate your access. Till then stay connected and additional assistance will be sent to you by your mail at ${email}`
-        );
-        setClientName("");
-        setEmail("");
-        setPhone("");
-        setPassword("");
-        setAddress("");
-        setCity("");
-        setCountry("");
-        setZip("");
+
+        await axios.post(`${BASE_URL}auth/register`, {full_name: clientName, email, password, phone_number, address, city_id, country, zip})
+                    .then(result => {
+                      console.log('result', result)
+                      if(result.status === 200){
+                        setSuccessMsg(
+                          `Alhamdulillah, register berhasil, silakan memilih produk Sweethome yang tersedia ^^.`
+                        );
+                        // Hello dear ${clientName}, Welcome you to OREBI Admin panel. We received your Sign up request. We are processing to validate your access. Till then stay connected and additional assistance will be sent to you by your mail at ${email}
+                        setClientName("");
+                        setEmail("");
+                        setPhone_number("");
+                        setPassword("");
+                        setAddress("");
+                        setCity("");
+                        setCountry("");
+                        setZip("");
+
+                        setTimeout(() => {
+                          navigate('/')
+
+                        }, 1000);
+
+                      }
+                    })
+                    .catch(error => {
+                      // console.log(error)
+                      setErrMsg(
+                          `Afwan, register gagal, mohon periksa kembali inputan anda ^^.`
+                        );
+
+                    })
       }
     }
   };
@@ -138,7 +170,7 @@ const SignUp = () => {
           </Link>
           <div className="flex flex-col gap-1 -mt-1">
             <h1 className="font-titleFont text-xl font-medium">
-              Get started for free
+              Daftar Akun sahabat sweethome
             </h1>
             <p className="text-base">Create your account to access more</p>
           </div>
@@ -183,7 +215,7 @@ const SignUp = () => {
           </div>
           <div className="flex items-center justify-between mt-10">
             <p className="text-sm font-titleFont font-semibold text-gray-300 hover:text-white cursor-pointer duration-300">
-              © OREBI
+              © Sweethome
             </p>
             <p className="text-sm font-titleFont font-semibold text-gray-300 hover:text-white cursor-pointer duration-300">
               Terms
@@ -198,14 +230,29 @@ const SignUp = () => {
         </div>
       </div>
       <div className="w-full lgl:w-[500px] h-full flex flex-col justify-center">
-        {successMsg ? (
+        {errorMsg && (
           <div className="w-[500px]">
             <p className="w-full px-4 py-10 text-green-500 font-medium font-titleFont">
+              {errorMsg}
+            </p>
+            <Link to="/register">
+              <button
+                className="w-full h-10 bg-primeColor rounded-md text-gray-200 text-base font-titleFont font-semibold
+            tracking-wide hover:bg-black hover:text-white duration-300"
+              >
+                Daftar
+              </button>
+            </Link>
+          </div>
+        )}
+        {successMsg ? (
+          <div className="w-[500px]">
+            <p className="w-full px-4 py-10 text-green-400 font-medium font-titleFont">
               {successMsg}
             </p>
-            <Link to="/signin">
+            <Link to="/login">
               <button
-                className="w-full h-10 bg-primeColor rounded-md text-gray-200 text-base font-titleFont font-semibold 
+                className="w-full h-10 bg-primeColor rounded-md text-gray-200 text-base font-titleFont font-semibold
             tracking-wide hover:bg-black hover:text-white duration-300"
               >
                 Sign in
@@ -216,20 +263,20 @@ const SignUp = () => {
           <form className="w-full lgl:w-[500px] h-screen flex items-center justify-center">
             <div className="px-6 py-4 w-full h-[96%] flex flex-col justify-start overflow-y-scroll scrollbar-thin scrollbar-thumb-primeColor">
               <h1 className="font-titleFont underline underline-offset-4 decoration-[1px] font-semibold text-2xl mdl:text-3xl mb-4">
-                Create your account
+                Daftar Akun Sahabat Sweethome
               </h1>
               <div className="flex flex-col gap-3">
                 {/* client name */}
                 <div className="flex flex-col gap-.5">
                   <p className="font-titleFont text-base font-semibold text-gray-600">
-                    Full Name
+                    Nama
                   </p>
                   <input
                     onChange={handleName}
                     value={clientName}
                     className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
                     type="text"
-                    placeholder="eg. John Doe"
+                    placeholder="Daniyah Malik"
                   />
                   {errClientName && (
                     <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
@@ -241,14 +288,14 @@ const SignUp = () => {
                 {/* Email */}
                 <div className="flex flex-col gap-.5">
                   <p className="font-titleFont text-base font-semibold text-gray-600">
-                    Work Email
+                    Email
                   </p>
                   <input
                     onChange={handleEmail}
                     value={email}
                     className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
                     type="email"
-                    placeholder="john@workemail.com"
+                    placeholder="daniyah@mail.com"
                   />
                   {errEmail && (
                     <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
@@ -257,22 +304,22 @@ const SignUp = () => {
                     </p>
                   )}
                 </div>
-                {/* Phone Number */}
+                {/* phone_number Number */}
                 <div className="flex flex-col gap-.5">
                   <p className="font-titleFont text-base font-semibold text-gray-600">
-                    Phone Number
+                    No. Hp
                   </p>
                   <input
-                    onChange={handlePhone}
-                    value={phone}
+                    onChange={(e) => handlePhone_number(e.target.value)}
+                    value={phone_number}
                     className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
                     type="text"
-                    placeholder="008801234567891"
+                    placeholder="08123456789"
                   />
-                  {errPhone && (
+                  {errPhone_number && (
                     <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
                       <span className="font-bold italic mr-1">!</span>
-                      {errPhone}
+                      {errPhone_number}
                     </p>
                   )}
                 </div>
@@ -286,7 +333,7 @@ const SignUp = () => {
                     value={password}
                     className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
                     type="password"
-                    placeholder="Create password"
+                    placeholder="password minimal 6 karakter"
                   />
                   {errPassword && (
                     <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
@@ -298,7 +345,7 @@ const SignUp = () => {
                 {/* Address */}
                 <div className="flex flex-col gap-.5">
                   <p className="font-titleFont text-base font-semibold text-gray-600">
-                    Address
+                    Alamat
                   </p>
                   <input
                     onChange={handleAddress}
@@ -317,15 +364,19 @@ const SignUp = () => {
                 {/* City */}
                 <div className="flex flex-col gap-.5">
                   <p className="font-titleFont text-base font-semibold text-gray-600">
-                    City
+                    Kota
                   </p>
-                  <input
+                  <select
                     onChange={handleCity}
-                    value={city}
+                    value={city_id}
                     className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
-                    type="text"
                     placeholder="Your city"
-                  />
+                  >
+                    <option value="424916d9-7626-4591-bc2f-16db6bb91b93" >Bandung</option>
+                    {cities && cities.map(city =>
+                      <option value={city.id} >{city.name} </option>
+                     )}
+                  </select>
                   {errCity && (
                     <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
                       <span className="font-bold italic mr-1">!</span>
@@ -336,14 +387,14 @@ const SignUp = () => {
                 {/* Country */}
                 <div className="flex flex-col gap-.5">
                   <p className="font-titleFont text-base font-semibold text-gray-600">
-                    Country
+                    Negara
                   </p>
                   <input
                     onChange={handleCountry}
                     value={country}
                     className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
                     type="text"
-                    placeholder="Your country"
+                    // placeholder=""
                   />
                   {errCountry && (
                     <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
@@ -355,14 +406,14 @@ const SignUp = () => {
                 {/* Zip code */}
                 <div className="flex flex-col gap-.5">
                   <p className="font-titleFont text-base font-semibold text-gray-600">
-                    Zip/Postal code
+                    Kode Pos
                   </p>
                   <input
                     onChange={handleZip}
                     value={zip}
                     className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
                     type="text"
-                    placeholder="Your country"
+                    // placeholder="Your country"
                   />
                   {errZip && (
                     <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
@@ -379,26 +430,26 @@ const SignUp = () => {
                     type="checkbox"
                   />
                   <p className="text-sm text-primeColor">
-                    I agree to the OREBI{" "}
+                    Setuju dengan Sweethome{" "}
                     <span className="text-blue-500">Terms of Service </span>and{" "}
                     <span className="text-blue-500">Privacy Policy</span>.
                   </p>
                 </div>
                 <button
-                  onClick={handleSignUp}
+                  onClick={handleRegister}
                   className={`${
                     checked
                       ? "bg-primeColor hover:bg-black hover:text-white cursor-pointer"
                       : "bg-gray-500 hover:bg-gray-500 hover:text-gray-200 cursor-none"
                   } w-full text-gray-200 text-base font-medium h-10 rounded-md hover:text-white duration-300`}
                 >
-                  Create Account
+                  Buat akun
                 </button>
                 <p className="text-sm text-center font-titleFont font-medium">
-                  Don't have an Account?{" "}
-                  <Link to="/signin">
+                  Sudah punya akun?{" "}
+                  <Link to="/login">
                     <span className="hover:text-blue-600 duration-300">
-                      Sign in
+                      Login
                     </span>
                   </Link>
                 </p>

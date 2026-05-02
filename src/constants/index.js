@@ -33,12 +33,12 @@ export const navBarList = [
   {
     _id: 1004,
     title: "Contact",
-    link: "contact",
+    link: "/contact",
   },
   {
     _id: 1005,
-    title: "Journal",
-    link: "/journal",
+    title: "Order History",
+    link: "/order-history",
   },
 ];
 // =================== NavBarList End here ======================

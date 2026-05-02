@@ -21,10 +21,11 @@ const ProductDetails = () => {
           <Breadcrumbs title="" prevLocation={prevLocation} />
         </div>
         <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4 h-full -mt-5 xl:-mt-8 pb-10 bg-gray-100 p-4">
-          <div className="h-full">
+          {/* <div className="h-full">
             <ProductsOnSale />
-          </div>
-          <div className="h-full xl:col-span-2">
+          </div> */}
+          <div className="h-full">
+            {/* xl:col-span-2 */}
             <img
               className="w-full h-full object-cover"
               src={productInfo.img}
