@@ -23,7 +23,7 @@ const OrderHistory = () => {
   const getOrderHitories = async (req, res) => {
     try {
 
-      await axios.get(`${BASE_URL}orders/histories`, {withCredentials: true})
+      await axios.get(`${BASE_URL}histories`, {withCredentials: true})
                   .then(result => {
                     console.log('result', result)
                     if(result.status == 200){
@@ -55,6 +55,7 @@ const OrderHistory = () => {
           looking style. */}
         </h1>
         <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700 lg:max-w-xl xl:max-w-2xl">Order History</div>
+
         {orders.length > 0 ? (
           <>
             <div className="w-[500px] h-auto py-6 flex flex-col gap-6">
@@ -63,18 +64,19 @@ const OrderHistory = () => {
                 <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700 lg:max-w-xl xl:max-w-2xl">
                   {orders.map(product => (
                     <div className="space-y-4 p-6">
-                      <h2 className="text-lg font-semibold text-gray-900 dark:text-white sm:text-2xl">
+                      <h2 className="text-base font-semibold text-gray-900 dark:text-white sm:text-2xl">
                         <Link to={`/order-history/${encodeURI(product.invoice_number?.toLowerCase())}`}>
                           {`Invoice Number #${product.invoice_number}` }
                         </Link>
                       </h2>
                       <div className="flex items-center gap-6">
                         <a href="#" className="h-14 w-14 shrink-0">
-                          <img className="h-full w-full dark:hidden" src={product.image} alt="imac image" />
+                          <img className="h-full w-full dark:hidden" src={product.image} alt={product.name} />
                           {/* <img className="hidden h-full w-full dark:block" src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg" alt="imac image" /> */}
                         </a>
 
-                        <a href="#" className="min-w-0 flex-1 font-medium text-gray-900 hover:underline dark:text-white"> {product.description} </a>
+                        {/* <a href="#" className="min-w-0 flex-1 font-medium text-gray-900 hover:underline dark:text-white">  </a> */}
+                        {product.description}
                         {/* PC system All in One APPLE iMac (2023) mqrq3ro/a, Apple M3, 24" Retina 4.5K, 8GB, SSD 256GB, 10-core GPU, macOS Sonoma, Blue, Keyboard layout INT */}
                       </div>
 
@@ -84,7 +86,7 @@ const OrderHistory = () => {
                         <div className="flex items-center justify-end gap-4">
                           <p className="text-base font-normal text-gray-900 dark:text-white">{`${product.total_amount} item`} </p>
 
-                          <p className="text-xl font-bold leading-tight text-gray-900 dark:text-white">{formatCurrency(product.price)}</p>
+                          <p className="text-xl font-bold leading-tight text-gray-900 dark:text-white">{formatCurrency(parseInt(product.total_price))}</p>
                         </div>
                       </div>
                     </div>

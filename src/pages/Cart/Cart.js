@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -15,10 +15,14 @@ const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.e
 const Cart = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
+  const location = useLocation();
   // const {products} = useSelector((state) => state.ecommReducer);
+  const [prevLocation, setPrevLocation] = useState("")
   const [products, setProducts] = useState([])
+  const [snap, setSnap] = useState(window.snap || "")
   const [totalAmt, setTotalAmt] = useState("");
   const [shippingCharge, setShippingCharge] = useState(0);
+
 
   useEffect(() => {
     let price = 0;
@@ -31,7 +35,10 @@ const Cart = () => {
       getCart()
     }
     console.log('products', products)
-  }, [products]);
+
+    // setPrevLocation(location.state.data)
+
+  }, [products, location]);
 
 
   const getCart = async () => {
@@ -65,11 +72,33 @@ const Cart = () => {
   const createInvoice = async () => {
     console.log('products', products)
     try {
-      await axios.post(`${BASE_URL}payments/request-invoices`, {product_id: products[0].id, amount: products[0].amount, price: products[0].price, admin_fee: products[0].admin_fee, discount: products[0].discount, promo_code: products[0].promo_code}, {withCredentials: true})
+      await axios.post(`${BASE_URL}payments/request-invoices`, {products, total_price: totalAmt, total_amount: 1, total_discount: 0, admin_fee: 0, promo_code: ''}, {withCredentials: true})
+      // await axios.post(`${BASE_URL}payments/request-invoices`, {product_id: products[0]._id, amount: products[0].quantity, price: products[0].price, admin_fee: products[0].admin_fee, discount: products[0].discount, promo_code: products[0].promo_code}, {withCredentials: true})
                   .then(result => {
                     console.log('result', result)
                     if(result.status === 200){
-                      navigate(result.data.data.redirect_url)
+                      // window.location.href=result.data.data.redirect_url
+
+                      snap.pay(result.data.data.token, {
+                        onSuccess: function(result){
+                          console.log('success');
+                          console.log(result);
+                          navigate('/order-history')
+                        },
+                        onPending: function(result){
+                          console.log('pending');console.log(result);
+                          toast.info('Navigating to order history')
+                          navigate('/order-history')
+                        },
+                        onError: function(result){
+                          console.log('error');console.log(result);
+                          toast.error('Error, Error request invoice')
+                        },
+                        onClose: function(){
+                          console.log('customer closed the popup without finishing the payment');
+                          navigate('/order-history')
+                        }
+                      })
                     }
                   })
                   .catch(error => {
@@ -78,6 +107,68 @@ const Cart = () => {
 
     } catch (error) {
       toast.error('Failed, Failed request invoice: ' + error)
+    }
+  }
+
+  // const handleAddToCart = async () => {
+  //   try {
+  //     await axios.post(`${BASE_URL}cart/add`, {product_id: productItem._id, price: productItem.price}, {withCredentials: true})
+  //                 .then(result => {
+  //                   console.log(result)
+  //                   if(result.status === 200){
+  //                     navigate('/cart')
+  //                   }
+  //                 })
+  //                 .catch(error => {
+  //                   console.log(error)
+  //                   toast.error('Failed, Failed add product to cart: ' + error)
+  //                 })
+
+  //   } catch (error) {
+  //     toast.error('Failed, Failed add product to cart: ' + error)
+  //   }
+  // }
+
+  const handleResetCart = async () => {
+    try {
+      await axios.delete(`${BASE_URL}cart/reset`, {withCredentials: true})
+                  .then(result => {
+                    console.log(result)
+                    if(result.status === 200){
+                      setProducts([])
+                    }
+                  })
+                  .catch(error => {
+                    console.log(error)
+                    toast.error('Failed, Failed reset cart: ' + error)
+                  })
+
+    } catch (error) {
+      toast.error('Failed, Failed reset cart: ' + error)
+    }
+  }
+
+  const handleIncrease = ({product_id}) => {
+    if(product_id){
+      console.log('product_id', product_id)
+      const increased_product = products.map(product => product._id == product_id? product.quantity++ : {...product})
+      // const increased_product = products.find(product => product._id = product_id)
+      // if(increased_product){
+      //   increased_product.quantity ++
+      // }
+      // console.log('increased_products', increased_product)
+      setProducts(increased_product)
+      // setProducts()
+      setProducts({...products.find(), ...increased_product})
+      console.log('products', products)
+    }
+
+  }
+
+  const handleDecrease = ({product_id}) => {
+    if(product_id){
+      setProducts(products.map(product => product._id = product_id? product.quantity--: ""))
+      // products.find(product => product._id = product_id).quantity --
     }
   }
 
@@ -91,7 +182,7 @@ const Cart = () => {
 
   return (
     <div className="max-w-container mx-auto px-4">
-      <Breadcrumbs title="Cart" />
+      <Breadcrumbs prevLocation={prevLocation} title="Cart" />
       {products.length > 0 ? (
         <div className="pb-20">
           <div className="w-full h-20 bg-[#F5F7F7] text-primeColor hidden lgl:grid grid-cols-5 place-content-center px-6 text-lg font-titleFont font-semibold">
@@ -103,13 +194,13 @@ const Cart = () => {
           <div className="mt-5">
             {products.map((item) => (
               <div key={item._id}>
-                <ItemCard item={item} />
+                <ItemCard item={item} setIncrease={handleIncrease} setDecrease={handleDecrease} />
               </div>
             ))}
           </div>
 
           <button
-            onClick={() => dispatch(resetCart())}
+            onClick={handleResetCart}
             className="py-2 px-10 bg-red-500 text-white font-semibold uppercase mb-4 hover:bg-red-700 duration-300"
           >
             Reset cart

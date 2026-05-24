@@ -17,7 +17,11 @@ const Product = (props) => {
   const dispatch = useDispatch();
   const _id = props.slug;
   const idString = (_id) => {
-    return String(_id).toLowerCase().split(" ").join("");
+    return _id? String(_id) : props.productName
+                            .toLowerCase()
+                            .split(" ")
+                            .join("")
+    // .toLowerCase().split(" ").join("");
   };
   const rootId = idString(_id);
 

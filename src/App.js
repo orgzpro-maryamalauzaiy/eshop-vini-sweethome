@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -5,6 +6,7 @@ import {
   createRoutesFromElements,
   Route,
   ScrollRestoration,
+  useNavigate
 } from "react-router-dom";
 import Footer from "./components/home/Footer/Footer";
 import FooterBottom from "./components/home/Footer/FooterBottom";
@@ -25,24 +27,37 @@ import Shop from "./pages/Shop/Shop";
 import Profile from "./pages/Profile/Profile";
 import OrderHistory from './pages/OrderHistory/OrderHistory'
 import OrderHistoryDetail from './pages/OrderHistory/OrderHistoryDetail'
+import ForgotPassword from "./pages/Account/ForgotPassword";
+import { BASE_URL } from "./server/api";
 
-const Layout = () => {
+import axios from "axios";
+import { ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Cookies from 'js-cookie'
+
+const userSession = ""
+
+const Layout = ({session }) => {
   return (
     <div>
-      <Header />
+      <Header session={session} />
       <HeaderBottom />
       <SpecialCase />
       <ScrollRestoration />
       <Outlet />
       <Footer />
       <FooterBottom />
+      <ToastContainer />
     </div>
   );
 };
+
 const router = createBrowserRouter(
+
   createRoutesFromElements(
     <Route>
-      <Route path="/" element={<Layout />}>
+      <Route path="/" element={<Layout session={userSession} />}>
         {/* ==================== Header Navlink Start here =================== */}
         <Route index element={<Home />}></Route>
         <Route path="/shop" element={<Shop />}></Route>
@@ -50,21 +65,56 @@ const router = createBrowserRouter(
         <Route path="/contact" element={<Contact />}></Route>
         <Route path="/journal" element={<Journal />}></Route>
         {/* ==================== Header Navlink End here ===================== */}
-        <Route path="/offer" element={<Offer />}></Route>
+        <Route path="/offer" element={<Offer/>}></Route>
         <Route path="/product/:_id" element={<ProductDetails />}></Route>
         <Route path="/cart" element={<Cart />}></Route>
         <Route path="/profile" element={<Profile />}></Route>
-        <Route path="/order-history" element={<OrderHistory />}></Route>
-        <Route path="/order-history/:id" element={<OrderHistoryDetail />}></Route>
-        <Route path="/paymentgateway" element={<Payment />}></Route>
+        <Route path="/order-history" element={<OrderHistory session={userSession} />}></Route>
+        <Route path="/order-history/:id" element={<OrderHistoryDetail session={userSession} />}></Route>
+        <Route path="/forgot-password" element={<ForgotPassword session={userSession}  />}></Route>
+        <Route path="/paymentgateway" element={<Payment session={userSession} />}></Route>
       </Route>
-      <Route path="/register" element={<SignUp />}></Route>
-      <Route path="/login" element={<SignIn />}></Route>
+      <Route path="/register" element={<SignUp session={userSession} />}></Route>
+      <Route path="/login" element={<SignIn session={userSession} />}></Route>
     </Route>
   )
 );
 
 function App() {
+
+  const token = Cookies.get('token')
+
+  useEffect(() => {
+
+    getUserSession(token)
+
+    // if(!userSession){
+    //   window.location.href = './login'
+    // }
+
+  }, [userSession])
+
+  const getUserSession = async () => {
+    try {
+      await axios.get(`${BASE_URL}auth/session`, {withCredentials: true})
+                  .then(result => {
+                    if(result.status == 200){
+                      userSession = result.data.session
+                    }else{
+                      toast.error('Failed, Failed when get session')
+                      window.location.href = './login'
+                    }
+                  })
+                  .catch(result => {
+                    // toast.error('Session expired')
+                    // window.location.href = './login'
+                  })
+
+    } catch (error) {
+
+    }
+  }
+
   return (
     <div className="font-bodyFont">
       <RouterProvider router={router} />

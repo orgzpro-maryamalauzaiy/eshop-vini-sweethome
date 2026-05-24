@@ -40,6 +40,11 @@ export const navBarList = [
     title: "Order History",
     link: "/order-history",
   },
+  {
+    _id: 1006,
+    title: "Forgot Password",
+    link: "/forgot-password",
+  },
 ];
 // =================== NavBarList End here ======================
 // =================== Special Offer data Start here ============

@@ -9,6 +9,7 @@ import { paginationItems } from "../../../constants";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { formatCurrency } from "../../../utils/formatCurrency";
+import Cookies from 'js-cookie'
 
 const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.VITE_PROD_URL
 
@@ -17,6 +18,7 @@ const HeaderBottom = () => {
   const [items, setItems] = useState([])
   const [show, setShow] = useState(false);
   const [showUser, setShowUser] = useState(false);
+  const [cookie, setCookie] = useState(Cookies.get('token') || null)
   const navigate = useNavigate();
   const ref = useRef();
   useEffect(() => {
@@ -38,11 +40,12 @@ const HeaderBottom = () => {
 
   useEffect(() => {
     getExistingProduct()
-    const filtered = items.filter((item) =>
-      item.productName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredProducts(filtered);
     if(searchQuery){
+      const filtered = items.filter((item) =>
+        item.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.category_name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredProducts(filtered);
       console.log('searchQuery', searchQuery)
     }
   }, [searchQuery]);
@@ -60,7 +63,8 @@ const HeaderBottom = () => {
                           price: item.price,
                           color: item.colors,
                           badge: false,
-                          des: item.description
+                          des: item.description,
+                          category_name: item.category_name
                         }}))
                       }
                     }
@@ -71,6 +75,22 @@ const HeaderBottom = () => {
 
     } catch (error) {
       toast.error('Failed, Failed when get existing products: ' + error)
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(`${BASE_URL}auth/logout`, {}, {withCredentials: true})
+                  .then(result => {
+                    console.log('result', result)
+                    if(result.status == 200){
+                      toast.success('Logout successfully.')
+                      navigate('/')
+                    }
+                  })
+
+    } catch (error) {
+      toast.error('Failed, Failed when logout:' + error)
     }
   }
 
@@ -132,7 +152,7 @@ const HeaderBottom = () => {
                     <div
                       onClick={() =>
                         navigate(
-                          `/product/${item.productName
+                          `/product/${item.slug? item.slug : item.productName
                             .toLowerCase()
                             .split(" ")
                             .join("")}`,
@@ -189,9 +209,13 @@ const HeaderBottom = () => {
                 <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
                   Profile
                 </li>
-                <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400  hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                  Others
-                </li>
+                {cookie && (
+                  <Link onClick={handleLogout}>
+                  <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400  hover:border-b-white hover:text-white duration-300 cursor-pointer">
+                    Logout
+                  </li>
+                  </Link>
+                )}
               </motion.ul>
             )}
             <Link to="/cart">

@@ -10,13 +10,17 @@ import Flex from "../../designLayouts/Flex";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { BASE_URL } from "../../../server/api";
+import Cookies from 'js-cookie'
 
-const Header = () => {
+const Header = ({session}) => {
   const [showMenu, setShowMenu] = useState(true);
   const [sidenav, setSidenav] = useState(false);
+  const [navbar_items, setNavbarItems] = useState(navBarList)
   const [category, setCategory] = useState(false);
   const [brand, setBrand] = useState(false);
+  const [cookie, setCookie] = useState(Cookies.get('token') || null)
   const location = useLocation();
+
   useEffect(() => {
     let ResponsiveMenu = () => {
       if (window.innerWidth < 667) {
@@ -28,8 +32,38 @@ const Header = () => {
     ResponsiveMenu();
     window.addEventListener("resize", ResponsiveMenu);
 
+    if(!cookie){
+      getCookie()
+    }
+
+    if(cookie === ''){
+      console.log('masuk')
+      console.log('cookie', cookie, navBarList, navbar_items)
+      getNavbarList()
+    }
+
     getCategories()
-  }, []);
+  }, [cookie, session]);
+
+  const getNavbarList = () => {
+    if(navBarList){
+      const navbars = navBarList.filter(item => item.title !== 'Order History' && item.title !== 'Profile')
+      console.log('navbars', navbars, navBarList)
+      setTimeout(() => {
+        setNavbarItems(navbars)
+      }, 1000);
+
+      console.log('navbars', navbars, navBarList, navbar_items)
+    }
+  }
+
+  const getCookie = () => {
+    const token = Cookies.get('token')
+
+    if(token){
+      setCookie(token)
+    }
+  }
 
   const getCategories = async () => {
     try {
@@ -67,7 +101,7 @@ const Header = () => {
                 className="flex items-center w-auto z-50 p-0 gap-2"
               >
                 <>
-                  {navBarList.map(({ _id, title, link }) => (
+                  {navbar_items.map(({ _id, title, link }) => (
                     <NavLink
                       key={_id}
                       className="flex font-normal hover:font-bold w-20 h-6 justify-center items-center px-12 text-base text-[#767676] hover:underline underline-offset-[4px] decoration-[1px] hover:text-[#262626] md:border-r-[2px] border-r-gray-300 hoverEffect last:border-r-0"
@@ -99,19 +133,19 @@ const Header = () => {
                       alt="sweethome logo"
                     />
                     <ul className="text-gray-200 flex flex-col gap-2">
-                      {navBarList.map((item) => (
-                        <li
-                          className="font-normal hover:font-bold items-center text-lg text-gray-200 hover:underline underline-offset-[4px] decoration-[1px] hover:text-white md:border-r-[2px] border-r-gray-300 hoverEffect last:border-r-0"
-                          key={item._id}
-                        >
-                          <NavLink
-                            to={item.link}
-                            state={{ data: location.pathname.split("/")[1] }}
-                            onClick={() => setSidenav(false)}
-                          >
-                            {item.title}
-                          </NavLink>
-                        </li>
+                      {navbar_items.map((item) => (
+                            <li
+                              className="font-normal hover:font-bold items-center text-lg text-gray-200 hover:underline underline-offset-[4px] decoration-[1px] hover:text-white md:border-r-[2px] border-r-gray-300 hoverEffect last:border-r-0"
+                              key={item._id}
+                            >
+                              <NavLink
+                                to={item.link}
+                                state={{ data: location.pathname.split("/")[1] }}
+                                onClick={() => setSidenav(false)}
+                              >
+                                {item.title}
+                              </NavLink>
+                            </li>
                       ))}
                     </ul>
                     <div className="mt-4">

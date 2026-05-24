@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import NavTitle from "./NavTitle";
 
-const Brand = ({getFilters}) => {
+const Brand = ({filters, getFilters}) => {
   const [showBrands, setShowBrands] = useState(true);
   const brands = [
     {
@@ -35,7 +35,7 @@ const Brand = ({getFilters}) => {
   const handleFilterType = (type) => {
     if(type){
       // filters.type = type
-      getFilters({type: type})
+      getFilters({...filters, type: type})
     }
     // setShowSubCatOne(!showSubCatOne)
   }
@@ -59,7 +59,7 @@ const Brand = ({getFilters}) => {
               <li
                 key={item._id}
                 className="border-b-[1px] border-b-[#F0F0F0] pb-2 flex items-center gap-2 hover:text-primeColor hover:border-gray-400 duration-300"
-                onClick={() => handleFilterType(item._id)}
+                onClick={() => handleFilterType(item.code_model)}
               >
                 {item.title}
               </li>

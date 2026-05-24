@@ -89,7 +89,7 @@ const NewArrivals = () => {
               _id={product.id}
               img={product.image}
               productName={product.name}
-              slug="round-table-clock-321"
+              slug={product.slug}
               price={product.price}
               color={product.colors[0]}
               badge={true}

@@ -42,7 +42,7 @@ const Profile = () => {
 
   const getProfile = async () => {
     try {
-      await axios.get(`${BASE_URL}profile/me`)
+      await axios.get(`${BASE_URL}profile`, {withCredentials: true})
                 .then(result => {
                   console.log('result', result)
                   if(result.status === 200){
@@ -73,38 +73,38 @@ const Profile = () => {
   }
 
   const handleName = (e) => {
-    setfull_name(e.target.value);
+    me.full_name = e.target.value;
     setErrfull_name("");
   };
 
   const handleEmail = (e) => {
-    setEmail(e.target.value);
+    me.email = e.target.value;
     setErrEmail("");
   };
 
   const handlePhoneNumber = (e) => {
-    setPhoneNumber(e.target.value);
+    me.phone_number = e.target.value;
     setErrPhoneNumber("");
   };
 
   const handleAddress = (e) => {
-    setAddress(e.target.value);
+    me.address = e.target.value;
     setErrAddresss("");
   };
 
   const handleCity = (e) => {
-    setCityId(e.target.value);
+    me.city_id = e.target.value;
     console.log('e', e)
     setErrCity("");
   };
 
   const handleCountry = (e) => {
-    setCountry(e.target.value);
+    me.country = e.target.value;
     setErrCountry("");
   };
 
   const handleZip = (e) => {
-    setZip(e.target.value);
+    me.zip = e.target.value;
     setErrZip("");
   };
 
@@ -118,31 +118,30 @@ const Profile = () => {
 
   const updateProfile = async (e) => {
     e.preventDefault();
-    if (!full_name) {
+
+    console.log('me', me)
+    if (!me.full_name) {
       setErrfull_name("Nama wajib diisi");
     }
-    if (!email) {
+    if (!me.email) {
       setErrEmail("Email wajib diisi");
     } else {
       if (!EmailValidation(email)) {
         setErrEmail("Email tidak valid");
       }
     }
-    if (!phone_number) {
+    if (!me.phone_number) {
       setErrPhoneNumber("No. Hp wajib diisi");
     }
-    if (!address) {
+    if (!me.address) {
       setErrAddresss("Alamat wajib diisi");
     }
-    if (!phone_number) {
-      setErrPhoneNumber("No. Hp wajib diisi");
-    }
-    if (!zip) {
+    if (!me.zip) {
       setErrZip("Kode Pos wajib diisi");
     }
-    if (full_name && email && EmailValidation(email) && address) {
+    if (me.full_name && me.email && EmailValidation(me.email) && me.address) {
       // Here you would typically make an API call to update the profile
-      await axios.patch(`${BASE_URL}profile`, {full_name, email, phone_number, address, city_id, country, zip}, {withCredentials: true})
+      await axios.patch(`${BASE_URL}profile`, {full_name: me.full_name, email: me.email, phone_number: me.phone_number, address: me.address, city_id: me.city_id, country: me.country, zip: me.zip}, {withCredentials: true})
                   .then(result => {
                     if(result.status == 200){
                       //  toast.success('Alhamdulillah, update profile berhasil')
@@ -158,12 +157,13 @@ const Profile = () => {
   return (
     <div className="max-w-container mx-auto px-4">
       <Breadcrumbs title="Profile" prevLocation={prevLocation} />
-      {successMsg ? (
+      {successMsg && (
         <p className="pb-20 w-96 font-medium text-green-500">{successMsg}</p>
-      ) : (
-        <form className="pb-20">
+      )}
+
+      <form className="pb-20">
           <h1 className="font-titleFont font-semibold text-3xl">
-            {me.full_name}
+            {me?.full_name}
           </h1>
           <div className="w-[500px] h-auto py-6 flex flex-col gap-6">
             <div>
@@ -172,7 +172,7 @@ const Profile = () => {
               </p>
               <input
                 onChange={handleName}
-                value={me.full_name}
+                value={me?.full_name}
                 className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor"
                 type="text"
                 placeholder="Daniyah Malik"
@@ -190,7 +190,7 @@ const Profile = () => {
               </p>
               <input
                 onChange={handleEmail}
-                value={me.email}
+                value={me?.email}
                 className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor"
                 type="email"
                 placeholder="Enter your name here"
@@ -208,7 +208,7 @@ const Profile = () => {
               </p>
               <input
                 onChange={handlePhoneNumber}
-                value={me.phone_number}
+                value={me?.phone_number}
                 className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor"
                 type="tel"
                 placeholder="081232434343"
@@ -226,7 +226,7 @@ const Profile = () => {
               </p>
               <textarea
                 onChange={handleAddress}
-                value={me.address}
+                value={me?.address}
                 cols="30"
                 rows="3"
                 className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor resize-none"
@@ -244,9 +244,10 @@ const Profile = () => {
                 City
               </p>
               <select
-                onChange={(e) => handleCity(e.target.value)}
-                value={me.city_id}
+                onChange={handleCity}
+                value={me?.city_id}
                 className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor"
+                // defaultValue={cities[0].id}
               >
                 {cities && cities.map(city => (
                   <option key={city.id} value={city.id}>{city.name}</option>
@@ -265,7 +266,7 @@ const Profile = () => {
               </p>
               <input
                 onChange={handleCountry}
-                value={me.country}
+                value={me?.country}
                 className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor"
                 placeholder="Enter country"
               />
@@ -282,7 +283,7 @@ const Profile = () => {
               </p>
               <input
                 onChange={handleZip}
-                value={me.zip}
+                value={me?.zip}
                 className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor"
                 placeholder="Enter country"
               />
@@ -301,7 +302,6 @@ const Profile = () => {
             </button>
           </div>
         </form>
-      )}
     </div>
   );
 };

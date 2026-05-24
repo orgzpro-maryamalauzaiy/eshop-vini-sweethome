@@ -32,7 +32,7 @@ const OrderHistoryDetail = () => {
   const getOrderHitory = async (req, res) => {
     try {
 
-      await axios.get(`${BASE_URL}orders/histories/${id}`, {withCredentials: true})
+      await axios.get(`${BASE_URL}histories/${id}`, {withCredentials: true})
                   .then(result => {
                     console.log('result', result)
                     if(result.status == 200){
@@ -92,12 +92,13 @@ const OrderHistoryDetail = () => {
           recognized for celebrating the essence of classNameic Worldwide muslimah fashion
           looking style. */}
         </h1>
-        <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700 lg:max-w-xl xl:max-w-2xl">Order History</div>
+        <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700">Order History</div>
+        {/* lg:max-w-xl xl:max-w-2xl */}
         {order && (
             <div className="w-full h-auto py-6 flex flex-col gap-6">
 
               <div className="mt-6 sm:mt-8 lg:flex lg:gap-8">
-                <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700 lg:max-w-xl xl:max-w-2xl">
+                <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700">
                     <div className="space-y-4 p-6">
                       <h2 className="text-lg font-semibold text-gray-900 dark:text-white sm:text-2xl">{`Invoice Number #${order.invoice_number}` } </h2>
                       <div className="flex items-center gap-6">
@@ -111,14 +112,14 @@ const OrderHistoryDetail = () => {
                       </div>
 
                       <div className="flex items-center justify-between gap-4">
-                        <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Tanggal Transaksi:</span> {order.created_at}</p>
+                        <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Tanggal Transaksi:</span> {formatIndonesiaDate(order.created_at)}</p>
                         <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Pemesan:</span> {user.full_name}</p>
                         <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Produk:</span></p>
 
                         <div className="flex items-center justify-end gap-4">
                           <p className="text-base font-normal text-gray-900 dark:text-white">{`${order.total_amount} item`} </p>
 
-                          <p className="text-xl font-bold leading-tight text-gray-900 dark:text-white">{formatCurrency(order.price)}</p>
+                          <p className="text-xl font-bold leading-tight text-gray-900 dark:text-white">{formatCurrency(order.total_price)}</p>
                         </div>
                       </div>
                       <div className="pb-20">

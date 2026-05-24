@@ -51,6 +51,7 @@ const SpecialOffers = () => {
             _id={product.id}
             img={product.image}
             productName={product.name}
+            slug={product.slug}
             price={product.price}
             color={product.color}
             badge={true}

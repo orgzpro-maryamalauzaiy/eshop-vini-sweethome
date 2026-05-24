@@ -49,13 +49,15 @@ export const ecommSlice = createSlice({
         (item) => item._id === action.payload._id,
       );
       if (item) {
+        console.log("item", state.products);
         item.quantity++;
       }
     },
-    drecreaseQuantity: (state, action) => {
+    decreaseQuantity: (state, action) => {
       const item = state.products.find(
         (item) => item._id === action.payload._id,
       );
+      console.log('item.quantity', item.quantity)
       if (item.quantity === 1) {
         item.quantity = 1;
       } else {
@@ -68,6 +70,7 @@ export const ecommSlice = createSlice({
       );
     },
     resetCart: (state) => {
+      console.log('state', state.products)
       state.products = [];
     },
   },
@@ -76,7 +79,7 @@ export const ecommSlice = createSlice({
 export const {
   addToCart,
   increaseQuantity,
-  drecreaseQuantity,
+  decreaseQuantity,
   deleteItem,
   resetCart,
 } = ecommSlice.actions;

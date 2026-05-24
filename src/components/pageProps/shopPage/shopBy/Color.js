@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import NavTitle from "./NavTitle";
 
-const Color = ({filters}) => {
+const Color = ({filters, getFilters}) => {
   const [showColors, setShowColors] = useState(true);
   const colors = [
     {
@@ -34,8 +34,8 @@ const Color = ({filters}) => {
 
   const handleFilterColors = (color) => {
     if(color){
-      filters.color = color
-      
+      // getFilters.color = color
+      getFilters({...filters, color: color})
       // getFilters({category: category})
     }
     // setShowSubCatOne(!showSubCatOne)
