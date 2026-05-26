@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import Breadcrumbs from "../../components/pageProps/Breadcrumbs";
+import {DatePicker} from "react-multi-date-picker"
 import { emptyCart } from "../../assets/images/index";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -12,6 +13,7 @@ const OrderHistory = () => {
   const location = useLocation();
   const [prevLocation, setPrevLocation] = useState("");
   const [orders, setOrders] = useState([{invoice_number: 'ino26-homedress1-432', image: 'https://res.cloudinary.com/dodrj3l9p/image/upload/v1775810924/curtains1_cbyycx.jpg', name: 'Curtain', price: '40000', total_amount: 2}])
+  const [value, setValue] = useState(new Date())
 
   useEffect(() => {
     // setPrevLocation(location.pathname);
@@ -36,6 +38,10 @@ const OrderHistory = () => {
     }
   }
 
+  const handleDateFilter = async (date_range) => {
+
+  }
+
   const formatCurrency = (amount: number) => {
       return new Intl.NumberFormat('id-ID', {
         style: 'currency',
@@ -55,6 +61,10 @@ const OrderHistory = () => {
           looking style. */}
         </h1>
         <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700 lg:max-w-xl xl:max-w-2xl">Order History</div>
+
+        <div>
+          <DatePicker value={value} onChange={handleDateFilter} />
+        </div>
 
         {orders.length > 0 ? (
           <>

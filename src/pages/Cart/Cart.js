@@ -148,6 +148,12 @@ const Cart = () => {
     }
   }
 
+  const handleRemove = ({product_id}) => {
+    if(product_id){
+      setProducts(products.filter(product => product._id != product_id))
+    }
+  }
+
   const handleIncrease = ({product_id}) => {
     if(product_id){
       console.log('product_id', product_id)
@@ -194,7 +200,7 @@ const Cart = () => {
           <div className="mt-5">
             {products.map((item) => (
               <div key={item._id}>
-                <ItemCard item={item} setIncrease={handleIncrease} setDecrease={handleDecrease} />
+                <ItemCard item={item} setIncrease={handleIncrease} setDecrease={handleDecrease} setRemove={handleRemove} />
               </div>
             ))}
           </div>

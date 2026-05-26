@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 
 const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.REACT_APP_PROD_URL
 
-const ItemCard = ({ item, setIncrease, setDecrease }) => {
+const ItemCard = ({ item, setIncrease, setDecrease, setRemove }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
 
@@ -28,7 +28,8 @@ const ItemCard = ({ item, setIncrease, setDecrease }) => {
                   .then(result => {
                     console.log(result)
                     if(result.status === 200){
-                      setDecrease(product_id)
+                      setRemove({product_id})
+                      // setDecrease(product_id)
                       // navigate('/cart')
                     }
                   })

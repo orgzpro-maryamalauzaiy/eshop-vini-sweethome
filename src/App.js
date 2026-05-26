@@ -42,8 +42,8 @@ const Layout = ({session }) => {
   return (
     <div>
       <Header session={session} />
-      <HeaderBottom />
-      <SpecialCase />
+      <HeaderBottom session={session} />
+      <SpecialCase session={session} />
       <ScrollRestoration />
       <Outlet />
       <Footer />

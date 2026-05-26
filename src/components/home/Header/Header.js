@@ -36,7 +36,7 @@ const Header = ({session}) => {
       getCookie()
     }
 
-    if(cookie === ''){
+    if(session !== ''){
       console.log('masuk')
       console.log('cookie', cookie, navBarList, navbar_items)
       getNavbarList()

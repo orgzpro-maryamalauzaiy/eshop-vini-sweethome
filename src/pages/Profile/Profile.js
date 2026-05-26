@@ -19,6 +19,7 @@ const Profile = () => {
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [phone_number, setPhoneNumber] = useState("");
+  const [province_id, setProvinceId] = useState("")
   const [city_id, setCityId] = useState("");
   const [country, setCountry] = useState("");
   const [cities, setCities] = useState([]);
@@ -29,6 +30,7 @@ const Profile = () => {
   const [errEmail, setErrEmail] = useState("");
   const [errAddresss, setErrAddresss] = useState("");
   const [errPhoneNumber, setErrPhoneNumber] = useState("");
+  const [errProvince, setErrProvince] = useState("");
   const [errCity, setErrCity] = useState("");
   const [errCountry, setErrCountry] = useState("");
   const [errZip, setErrZip] = useState("");
@@ -58,7 +60,7 @@ const Profile = () => {
 
   const getCities = async (req, res) => {
     try {
-      await axios.get(`${BASE_URL}cities`)
+    await axios.get(`${BASE_URL}cities`)
                   .then(result => {
                     console.log('result', result)
                     setCities(result.data.data)
@@ -72,8 +74,15 @@ const Profile = () => {
     }
   }
 
+  const handleFormData = (name, value) => {
+    if(name && value){
+      setMe({...me, [name]: value})
+    }
+  }
+
   const handleName = (e) => {
     me.full_name = e.target.value;
+    console.log('full_name', me.full_name)
     setErrfull_name("");
   };
 
@@ -90,6 +99,12 @@ const Profile = () => {
   const handleAddress = (e) => {
     me.address = e.target.value;
     setErrAddresss("");
+  };
+
+  const handleProvince = (e) => {
+    me.city_id = e.target.value;
+    console.log('e', e)
+    setErrProvince("");
   };
 
   const handleCity = (e) => {
@@ -141,7 +156,7 @@ const Profile = () => {
     }
     if (me.full_name && me.email && EmailValidation(me.email) && me.address) {
       // Here you would typically make an API call to update the profile
-      await axios.patch(`${BASE_URL}profile`, {full_name: me.full_name, email: me.email, phone_number: me.phone_number, address: me.address, city_id: me.city_id, country: me.country, zip: me.zip}, {withCredentials: true})
+      await axios.patch(`${BASE_URL}profile`, {full_name: me.full_name, email: me.email, phone_number: me.phone_number, address: me.address, province_id: me.province_id, city_id: me.city_id, country: me.country, zip: me.zip}, {withCredentials: true})
                   .then(result => {
                     if(result.status == 200){
                       //  toast.success('Alhamdulillah, update profile berhasil')
@@ -171,8 +186,8 @@ const Profile = () => {
                 Name
               </p>
               <input
-                onChange={handleName}
-                value={me?.full_name}
+                onChange={(e) => handleFormData(e.target.value)}
+                value={me.full_name}
                 className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor"
                 type="text"
                 placeholder="Daniyah Malik"

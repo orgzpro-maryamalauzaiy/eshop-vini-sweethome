@@ -372,7 +372,7 @@ const SignUp = () => {
                     className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
                     placeholder="Your city"
                   >
-                    <option value="424916d9-7626-4591-bc2f-16db6bb91b93" >Bandung</option>
+                    {/* <option value="424916d9-7626-4591-bc2f-16db6bb91b93" >Bandung</option> */}
                     {cities && cities.map(city =>
                       <option value={city.id} >{city.name} </option>
                      )}

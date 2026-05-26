@@ -13,7 +13,7 @@ import Cookies from 'js-cookie'
 
 const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.VITE_PROD_URL
 
-const HeaderBottom = () => {
+const HeaderBottom = ({session}) => {
   const products = useSelector((state) => state.ecommReducer.products);
   const [items, setItems] = useState([])
   const [show, setShow] = useState(false);
@@ -201,15 +201,15 @@ const HeaderBottom = () => {
                     Login
                   </li>
                 </Link>
-                <Link onClick={() => setShowUser(false)} to="/signup">
+                {/* <Link onClick={() => setShowUser(false)} to="/signup">
                   <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
                     Daftar
                   </li>
-                </Link>
+                </Link> */}
                 <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
                   Profile
                 </li>
-                {cookie && (
+                {session && (
                   <Link onClick={handleLogout}>
                   <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400  hover:border-b-white hover:text-white duration-300 cursor-pointer">
                     Logout
