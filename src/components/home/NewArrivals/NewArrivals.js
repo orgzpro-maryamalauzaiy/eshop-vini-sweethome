@@ -91,7 +91,7 @@ const NewArrivals = () => {
               productName={product.name}
               slug={product.slug}
               price={product.price}
-              color={product.colors[0]}
+              color={product.colors}
               badge={true}
               des={product.description}
             />

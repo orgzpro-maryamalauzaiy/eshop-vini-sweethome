@@ -25,15 +25,19 @@ const Cart = () => {
 
 
   useEffect(() => {
-    let price = 0;
-    products.map((item) => {
-      price += item.price * item.quantity;
-      return price;
-    });
-    setTotalAmt(price);
+
     if(products.length === 0){
       getCart()
     }
+
+    let price = 0;
+        products.map((item) => {
+          price += item.price * item.quantity;
+          return price;
+        });
+        setTotalAmt(price);
+
+    // if(products.length)
     console.log('products', products)
 
     // setPrevLocation(location.state.data)
@@ -48,6 +52,12 @@ const Cart = () => {
                   console.log('result', result)
                   if(result.status === 200){
                     setProducts(result.data.data)
+                    let price = 0;
+                    products.map((item) => {
+                      price += item.price * item.quantity;
+                      return price;
+                    });
+                    setTotalAmt(price);
                   }
                 })
 
@@ -72,7 +82,7 @@ const Cart = () => {
   const createInvoice = async () => {
     console.log('products', products)
     try {
-      await axios.post(`${BASE_URL}payments/request-invoices`, {products, total_price: totalAmt, total_amount: 1, total_discount: 0, admin_fee: 0, promo_code: ''}, {withCredentials: true})
+      await axios.post(`${BASE_URL}payments/request-invoices`, {products, total_price: totalAmt, total_amount: totalAmt + shippingCharge, total_discount: 0, admin_fee: 0, promo_code: ''}, {withCredentials: true})
       // await axios.post(`${BASE_URL}payments/request-invoices`, {product_id: products[0]._id, amount: products[0].quantity, price: products[0].price, admin_fee: products[0].admin_fee, discount: products[0].discount, promo_code: products[0].promo_code}, {withCredentials: true})
                   .then(result => {
                     console.log('result', result)
@@ -157,15 +167,16 @@ const Cart = () => {
   const handleIncrease = ({product_id}) => {
     if(product_id){
       console.log('product_id', product_id)
-      const increased_product = products.map(product => product._id == product_id? product.quantity++ : {...product})
+      const increased_product = products.map(product => product._id == product_id? {_id: product._id, name: product.name, image: product.image, price: product.price, quantity: product.quantity + 1 } : "")
       // const increased_product = products.find(product => product._id = product_id)
       // if(increased_product){
       //   increased_product.quantity ++
       // }
       // console.log('increased_products', increased_product)
-      setProducts(increased_product)
+      // setProducts(increased_product)
       // setProducts()
-      setProducts({...products.find(), ...increased_product})
+      setProducts([...products.filter(product => product._id !== product_id), ...increased_product])
+
       console.log('products', products)
     }
 
@@ -173,7 +184,11 @@ const Cart = () => {
 
   const handleDecrease = ({product_id}) => {
     if(product_id){
-      setProducts(products.map(product => product._id = product_id? product.quantity--: ""))
+      const decreased_product = products.map(product => product._id = product_id? {_id: product._id, name: product.name, image: product.image, price: product.price, quantity: product.quantity - 1}: "")
+
+      setProducts([...products.filter(product => product !== product_id), ...decreased_product])
+
+      // setProducts(products.map(product => product._id = product_id? product.quantity--: ""))
       // products.find(product => product._id = product_id).quantity --
     }
   }

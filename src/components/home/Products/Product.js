@@ -129,7 +129,17 @@ const Product = (props) => {
           <p className="text-[#767676] text-[14px]">{formatCurrency(props.price)}</p>
         </div>
         <div>
-          <p className="text-[#767676] text-[14px]">{props.color}</p>
+          {/* <p className="text-[#767676] text-[14px]">{props.color}</p> */}
+          {props.color?.forEach(item => (
+            <>
+              <span
+                style={{ background: item }}
+                className={`w-3 h-3 bg-gray-500 rounded-full`}
+              >
+              </span>
+              {/* {item.title} */}
+            </>
+          ))}
         </div>
       </div>
     </div>

@@ -4,10 +4,10 @@ import {
   RouterProvider,
   Outlet,
   createRoutesFromElements,
-  Route,
   ScrollRestoration,
-  useNavigate
+  useNavigate,
 } from "react-router-dom";
+import {  BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import Footer from "./components/home/Footer/Footer";
 import FooterBottom from "./components/home/Footer/FooterBottom";
 import Header from "./components/home/Header/Header";
@@ -35,78 +35,23 @@ import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from 'js-cookie'
+import { useSelector } from "react-redux";
 
-const userSession = ""
+let useruser = ""
 
-const Layout = ({session }) => {
-  return (
-    <div>
-      <Header session={session} />
-      <HeaderBottom session={session} />
-      <SpecialCase session={session} />
-      <ScrollRestoration />
-      <Outlet />
-      <Footer />
-      <FooterBottom />
-      <ToastContainer />
-    </div>
-  );
-};
-
-const router = createBrowserRouter(
-
-  createRoutesFromElements(
-    <Route>
-      <Route path="/" element={<Layout session={userSession} />}>
-        {/* ==================== Header Navlink Start here =================== */}
-        <Route index element={<Home />}></Route>
-        <Route path="/shop" element={<Shop />}></Route>
-        <Route path="/about" element={<About />}></Route>
-        <Route path="/contact" element={<Contact />}></Route>
-        <Route path="/journal" element={<Journal />}></Route>
-        {/* ==================== Header Navlink End here ===================== */}
-        <Route path="/offer" element={<Offer/>}></Route>
-        <Route path="/product/:_id" element={<ProductDetails />}></Route>
-        <Route path="/cart" element={<Cart />}></Route>
-        <Route path="/profile" element={<Profile />}></Route>
-        <Route path="/order-history" element={<OrderHistory session={userSession} />}></Route>
-        <Route path="/order-history/:id" element={<OrderHistoryDetail session={userSession} />}></Route>
-        <Route path="/forgot-password" element={<ForgotPassword session={userSession}  />}></Route>
-        <Route path="/paymentgateway" element={<Payment session={userSession} />}></Route>
-      </Route>
-      <Route path="/register" element={<SignUp session={userSession} />}></Route>
-      <Route path="/login" element={<SignIn session={userSession} />}></Route>
-    </Route>
-  )
-);
-
-function App() {
-
-  const token = Cookies.get('token')
-
-  useEffect(() => {
-
-    getUserSession(token)
-
-    // if(!userSession){
-    //   window.location.href = './login'
-    // }
-
-  }, [userSession])
-
-  const getUserSession = async () => {
+const getUseruser = async () => {
     try {
-      await axios.get(`${BASE_URL}auth/session`, {withCredentials: true})
+      await axios.get(`${BASE_URL}auth/user`, {withCredentials: true})
                   .then(result => {
                     if(result.status == 200){
-                      userSession = result.data.session
+                      useruser = result.data.user
                     }else{
-                      toast.error('Failed, Failed when get session')
+                      toast.error('Failed, Failed when get user')
                       window.location.href = './login'
                     }
                   })
                   .catch(result => {
-                    // toast.error('Session expired')
+                    // toast.error('user expired')
                     // window.location.href = './login'
                   })
 
@@ -115,9 +60,71 @@ function App() {
     }
   }
 
+const Layout = ({user}) => {
+
+  return (
+    <div>
+      <Header user={user} />
+      <HeaderBottom user={user} />
+      <SpecialCase user={user} />
+      {/* <ScrollRestoration /> */}
+      <Outlet user={user} />
+      <Footer user={user} />
+      <FooterBottom  user={user} />
+      <ToastContainer />
+    </div>
+  );
+};
+
+// const router = createBrowserRouter(
+
+//   createRoutesFromElements(
+
+//   )
+// );
+
+function App() {
+
+  const {loading, userEmail} = useSelector(state => state.auth)
+  const [userInfo, setUserInfo] = useState("")
+  // const token = Cookies.get('token')
+
+  useEffect(() => {
+    if(!loading && userEmail){
+      console.log('userEmail', userEmail, loading)
+      setUserInfo(userEmail)
+    }
+
+  },[userEmail])
+
   return (
     <div className="font-bodyFont">
-      <RouterProvider router={router} />
+      {/* <RouterProvider router={router}/> */}
+        <Router>
+          <Routes>
+            <Route>
+              <Route path="/" element={<Layout user={userInfo} />}>
+                {/* ==================== Header Navlink Start here =================== */}
+                <Route index element={<Home user={userInfo} />}></Route>
+                <Route path="/shop" element={<Shop user={userInfo} />}></Route>
+                <Route path="/about" element={<About />}></Route>
+                <Route path="/contact" element={<Contact />}></Route>
+                <Route path="/journal" element={<Journal />}></Route>
+                {/* ==================== Header Navlink End here ===================== */}
+                <Route path="/offer" element={<Offer/>}></Route>
+                <Route path="/product/:_id" element={<ProductDetails />}></Route>
+                <Route path="/cart" element={<Cart />}></Route>
+                <Route path="/profile" element={<Profile />}></Route>
+                <Route path="/order-history" element={<OrderHistory user={useruser} />}></Route>
+                <Route path="/order-history/:id" element={<OrderHistoryDetail user={useruser} />}></Route>
+                <Route path="/forgot-password" element={<ForgotPassword user={useruser}  />}></Route>
+                <Route path="/paymentgateway" element={<Payment user={useruser} />}></Route>
+              </Route>
+              <Route path="/register" element={<SignUp user={useruser} />}></Route>
+              <Route path="/login" element={<SignIn user={useruser} />}></Route>
+            </Route>
+          </Routes>
+        </Router>
     </div>
   );
 }

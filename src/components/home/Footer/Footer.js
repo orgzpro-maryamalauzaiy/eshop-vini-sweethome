@@ -1,14 +1,53 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaFacebook, FaYoutube, FaLinkedin, FaGithub, FaInstagram } from "react-icons/fa";
 import FooterListTitle from "./FooterListTitle";
 import { paymentCard } from "../../../assets/images";
 import Image from "../../designLayouts/Image";
+import { toast } from "react-toastify";
+import { BASE_URL } from "../../../server/api";
+import { error } from "../../../redux/authSlice";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Footer = () => {
   const [emailInfo, setEmailInfo] = useState("");
+  const [categories, setCategory] = useState([])
   const [subscription, setSubscription] = useState(false);
   const [errMsg, setErrMsg] = useState("");
+  const navigate = useNavigate()
+
+  useEffect(() => {
+
+    getCategories()
+
+  }, [])
+
+  const getCategories = async (req, res) => {
+    try {
+
+      await axios.get(`${BASE_URL}categories`)
+                  .then(result => {
+                    console.log('result', result)
+                    if(result.status === 200){
+                      setCategory(result.data.data)
+                    }
+
+                  })
+                  .catch(error => {
+                    toast.error('Failed, failed when get categories: ' + error)
+                  })
+
+    } catch (error) {
+      toast('Failed, failed when get categories: ' + error)
+    }
+  }
+
+  const handleProductByCategory = (category) => {
+    if(category){
+      navigate('/shop' + '?type=' + category)
+    }
+  }
 
   const emailValidation = () => {
     return String(emailInfo)
@@ -80,12 +119,14 @@ const Footer = () => {
         <div>
           <FooterListTitle title="Shop" />
           <ul className="flex flex-col gap-2">
-            {/* {categories && categories.map(category => (
-              <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-                category.name
+            {categories && categories.map(category => (
+              <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300"
+                  onClick={() => handleProductByCategory(category.name)}
+                >
+                {category.name}
               </li>
-            ))} */}
-            <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
+            ))}
+            {/* <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
               Accesories
             </li>
             <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
@@ -99,7 +140,7 @@ const Footer = () => {
             </li>
             <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
               New Arrivals
-            </li>
+            </li> */}
           </ul>
         </div>
         <div>

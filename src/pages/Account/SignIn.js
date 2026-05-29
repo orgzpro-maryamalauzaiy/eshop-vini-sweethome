@@ -5,11 +5,16 @@ import { Link } from "react-router-dom";
 import { logoLight } from "../../assets/images";
 import axios from "axios";
 import Cookies from 'js-cookie'
+import { login } from "../../redux/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.VITE_PROD_URL
 
 const SignIn = () => {
   const [cookie, SetCookie] = useState("")
+
+  const {userEmail, error, loading} = useSelector(state => state.auth)
   // ============= Initial State Start here =============
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,17 +27,24 @@ const SignIn = () => {
   const [successMsg, setSuccessMsg] = useState("");
   // ============= Event Handler Start here =============
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+
   useEffect(() => {
 
     if(!cookie){
       getCookie()
     }
 
-    if(cookie){
+    if(!loading && !error && userEmail){
+      toast.success('Berhasil, Anda berhasil login')
+      console.log('userEmail', userEmail)
+
       navigate('/')
     }
 
-  }, [cookie])
+    console.log('userEmail', userEmail)
+
+  }, [cookie, userEmail])
 
   const getCookie = () => {
     const token = Cookies.get('token')
@@ -61,22 +73,26 @@ const SignIn = () => {
     }
     // ============== Getting the value ==============
     if (email && password) {
-      await axios.post(`${BASE_URL}auth/login`, {username: email, password: password})
-                  .then(result => {
-                    console.log('result', result)
-                    if(result.status === 200){
-                      Cookies.set('token', result.data.data.token)
-                      setSuccessMsg(
-                        `Alhamdulillah, logged in successfull!`
-                      );
-                      setTimeout(() => {
-                        navigate('/')
-                      }, 1000);
-                    }
-                  })
-                  .catch(error => {
-                    // setErrorMsg("Afwan, login gagal email atau password salah")
-                  })
+
+      dispatch(login({username: email, password}))
+
+      // await axios.post(`${BASE_URL}auth/login`, {username: email, password: password})
+      //             .then(result => {
+      //               console.log('result', result)
+      //               if(result.status === 200){
+      //                 Cookies.set('token', result.data.data.token)
+      //                 // dispatch(setUserInfo(result.data.data))
+      //                 setSuccessMsg(
+      //                   `Alhamdulillah, logged in successfull!`
+      //                 );
+      //                 setTimeout(() => {
+      //                   navigate('/')
+      //                 }, 1000);
+      //               }
+      //             })
+      //             .catch(error => {
+      //               // setErrorMsg("Afwan, login gagal email atau password salah")
+      //             })
       // setSuccessMsg(
       //   `Hello dear, Thank you for your attempt. We are processing to validate your access. Till then stay connected and additional assistance will be sent to you by your mail at ${email}`
       // );

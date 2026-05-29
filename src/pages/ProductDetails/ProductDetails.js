@@ -24,7 +24,7 @@ const ProductDetails = () => {
           {/* <div className="h-full">
             <ProductsOnSale />
           </div> */}
-          <div className="h-full">
+          <div className="col-span-3 h-full">
             {/* xl:col-span-2 */}
             <img
               className="w-full h-full object-cover"

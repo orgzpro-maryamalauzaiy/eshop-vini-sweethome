@@ -1,16 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { RiShoppingCart2Fill } from "react-icons/ri";
 import { MdSwitchAccount } from "react-icons/md";
 import {RiLoginCircleLine} from "react-icons/ri"
 import { useSelector } from "react-redux";
 
-const SpecialCase = ({session}) => {
+const SpecialCase = ({user}) => {
   const products = useSelector((state) => state.ecommReducer.products);
+
+  useEffect(() => {
+    console.log('user from specialcase:', user)
+  }, [user])
 
   return (
     <div className="fixed top-52 right-2 z-20 hidden md:flex flex-col gap-2">
-      {session ? (
+      {user ? (
         <Link to="/profile">
           <div className="bg-white w-16 h-[70px] rounded-md flex flex-col gap-1 text-[#33475b] justify-center items-center shadow-testShadow overflow-x-hidden group cursor-pointer">
             <div className="flex justify-center items-center">

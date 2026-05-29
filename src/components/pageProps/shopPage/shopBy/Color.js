@@ -66,8 +66,8 @@ const Color = ({filters, getFilters}) => {
                   className={`w-3 h-3 bg-gray-500 rounded-full`}
                   onClick={() => handleFilterColors(item.base)}
                 >
-                {item.title}
                 </span>
+                {item.title}
               </li>
             ))}
           </ul>

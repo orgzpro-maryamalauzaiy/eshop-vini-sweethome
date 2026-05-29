@@ -3,9 +3,12 @@ import Breadcrumbs from "../../components/pageProps/Breadcrumbs";
 import Pagination from "../../components/pageProps/shopPage/Pagination";
 import ProductBanner from "../../components/pageProps/shopPage/ProductBanner";
 import ShopSideNav from "../../components/pageProps/shopPage/ShopSideNav";
+import { useParams, useSearchParams } from "react-router-dom";
 
 const Shop = () => {
   const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [searchParams, setSearchParams] = useSearchParams()
+  const type = searchParams.get('type')
   const itemsPerPageFromBanner = (itemsPerPage) => {
     setItemsPerPage(itemsPerPage);
   };
@@ -17,9 +20,12 @@ const Shop = () => {
   // }
 
   useEffect(() => {
-    // console.log('filters', filters)
+    console.log('params', type, filters)
+    if(type){
+      getFilters({type})
+    }
 
-  }, [filters])
+  }, [filters, type])
 
   const getFilters = async (filters) => {
     if(filters){

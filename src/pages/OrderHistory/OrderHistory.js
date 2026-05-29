@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import Breadcrumbs from "../../components/pageProps/Breadcrumbs";
-import {DatePicker} from "react-multi-date-picker"
+import DatePicker, {DateObject} from "react-multi-date-picker"
 import { emptyCart } from "../../assets/images/index";
 import { toast } from "react-toastify";
 import axios from "axios";
+import DatePanel from "react-multi-date-picker/plugins/date_panel";
 
 const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.VITE_PROD_URL
 
@@ -13,25 +14,61 @@ const OrderHistory = () => {
   const location = useLocation();
   const [prevLocation, setPrevLocation] = useState("");
   const [orders, setOrders] = useState([{invoice_number: 'ino26-homedress1-432', image: 'https://res.cloudinary.com/dodrj3l9p/image/upload/v1775810924/curtains1_cbyycx.jpg', name: 'Curtain', price: '40000', total_amount: 2}])
-  const [value, setValue] = useState(new Date())
+  const [date_range, setDateRange] = useState([
+    new DateObject().setDay(1) ,
+    new DateObject().add(1, "month").setDay(10)
+  ])
 
   useEffect(() => {
     // setPrevLocation(location.pathname);
     // setPrevLocation(location.state.data);
     console.log('location.state', location.state)
     getOrderHitories()
-  }, [location]);
 
-  const getOrderHitories = async (req, res) => {
+    if(date_range){
+      getOrderHitories(date_range)
+    }
+  }, [location, date_range]);
+
+  const getOrderHitories = async (date_range = null) => {
     try {
 
-      await axios.get(`${BASE_URL}histories`, {withCredentials: true})
-                  .then(result => {
-                    console.log('result', result)
-                    if(result.status == 200){
-                      setOrders(result.data.data)
-                    }
-                  })
+      if(date_range){
+        console.log('date_range', date_range[0].day)
+
+        const queryParams = new URLSearchParams()
+
+        // const [from, to] = date_range;
+
+        const from = date_range[0].year + '-' + date_range[0].month + '-' + date_range[0].day
+        const to = date_range[1].year + '-' + date_range[1].month + '-' + date_range[1].day
+
+        if (from && to) {
+          queryParams.append('from', from);
+          queryParams.append('to', to);
+        }
+        // const queryString = queryParams.toString()
+
+        await axios.get(`${BASE_URL}histories${queryParams? '?' + queryParams: "" }`, {withCredentials: true})
+                    .then(result => {
+                      console.log('result', result)
+                      if(result.status == 200){
+                        setOrders(result.data.data)
+                      }
+                    })
+
+      // const queryParams
+
+      }else{
+        await axios.get(`${BASE_URL}histories`, {withCredentials: true})
+                    .then(result => {
+                      console.log('result', result)
+                      if(result.status == 200){
+                        setOrders(result.data.data)
+                      }
+                    })
+      }
+
 
     } catch (error) {
       toast.error('Error get order histories: ' + error)
@@ -54,24 +91,32 @@ const OrderHistory = () => {
     <div className="max-w-container mx-auto px-4">
       <Breadcrumbs title="Order History" prevLocation={prevLocation} />
       <div className="pb-10">
-        <h1 className="max-w-[600px] text-base text-lightText mb-2">
+        <h1 className="w-full text-base text-lightText mb-2">
           <span className="text-primeColor font-semibold text-lg">SweetHome</span>{" "}
           {/* is one of the world's leading ecommerce brands and is internationally
           recognized for celebrating the essence of classNameic Worldwide muslimah fashion
           looking style. */}
         </h1>
-        <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700 lg:max-w-xl xl:max-w-2xl">Order History</div>
 
-        <div>
-          <DatePicker value={value} onChange={handleDateFilter} />
+        <div className="flex">
+          <div className="flex w-full divide-y divide-gray-200 overflow-hidden dark:divide-gray-700 dark:border-gray-700 lg:max-w-xl xl:max-w-2xl">Order History</div>
+          <div className="flex w-full justify-between items-end">
+            <DatePicker value={date_range} onChange={setDateRange} range rangeHover
+              plugins={[
+                <DatePanel />
+              ]}
+            />
+          </div>
         </div>
+
+
 
         {orders.length > 0 ? (
           <>
             <div className="w-[500px] h-auto py-6 flex flex-col gap-6">
 
               <div className="mt-6 sm:mt-8 lg:flex lg:gap-8">
-                <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700 lg:max-w-xl xl:max-w-2xl">
+                <div className="w-full divide-y divide-gray-200 gap-3 overflow-hidden rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700 lg:max-w-xl xl:max-w-2xl">
                   {orders.map(product => (
                     <div className="space-y-4 p-6">
                       <h2 className="text-base font-semibold text-gray-900 dark:text-white sm:text-2xl">

@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 import { BASE_URL } from "../../../server/api";
 import Cookies from 'js-cookie'
 
-const Header = ({session}) => {
+const Header = ({user}) => {
   const [showMenu, setShowMenu] = useState(true);
   const [sidenav, setSidenav] = useState(false);
   const [navbar_items, setNavbarItems] = useState(navBarList)
@@ -36,24 +36,31 @@ const Header = ({session}) => {
       getCookie()
     }
 
-    if(session !== ''){
-      console.log('masuk')
-      console.log('cookie', cookie, navBarList, navbar_items)
-      getNavbarList()
-    }
+    // if(!user){
+    //   console.log('masuk')
+    //   console.log('cookie', cookie, navBarList, navbar_items)
+
+    // }
+    console.log('user from header', user)
+
+    getNavbarList()
 
     getCategories()
-  }, [cookie, session]);
+
+  }, [cookie, user]);
 
   const getNavbarList = () => {
-    if(navBarList){
-      const navbars = navBarList.filter(item => item.title !== 'Order History' && item.title !== 'Profile')
+    if(!user){
+      const navbars = navBarList.filter(item => item.title !== 'Order History' && item.title !== 'Profile' && item.title !== 'Forgot Password')
       console.log('navbars', navbars, navBarList)
-      setTimeout(() => {
-        setNavbarItems(navbars)
-      }, 1000);
+      setNavbarItems(navbars)
+      // setTimeout(() => {
+
+      // }, 1000);
 
       console.log('navbars', navbars, navBarList, navbar_items)
+    }else{
+      setNavbarItems(navBarList)
     }
   }
 
