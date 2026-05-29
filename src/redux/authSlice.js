@@ -12,7 +12,7 @@ let initialState = {
     userEmail: null
 }
 
-const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.VITE_PROD_URL
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 const LOCAL_URL = process.env.REACT_APP_LOCAL_URL
 
 // const initialState = {
@@ -23,7 +23,7 @@ const LOCAL_URL = process.env.REACT_APP_LOCAL_URL
 export const login = createAsyncThunk(
   '/auth/login',
   async (data) => {
-    await axios.post(`${BASE_URL}auth/login`, data)
+    await axios.post(`${BASE_URL}/auth/login`, data)
           .then(result => {
             console.log('result', result.data.data)
             Cookies.set('token', result.data.data.token)

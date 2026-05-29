@@ -12,7 +12,7 @@ import { formatCurrency } from "../../../utils/formatCurrency";
 import Cookies from 'js-cookie'
 import { logout } from "../../../redux/authSlice";
 
-const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.VITE_PROD_URL
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
 const HeaderBottom = ({user}) => {
   const products = useSelector((state) => state.ecommReducer.products);
@@ -60,7 +60,7 @@ const HeaderBottom = ({user}) => {
 
   const getExistingProduct = async () => {
     try {
-      await axios.get(`${BASE_URL}products${searchQuery?`?keyword=${searchQuery}`:""}`)
+      await axios.get(`${BASE_URL}/products${searchQuery?`?keyword=${searchQuery}`:""}`)
                   .then(result => {
                     console.log('result from sear', result)
                     if(result.status === 200){

@@ -11,7 +11,7 @@ import { addToCart } from "../../../redux/ecommSlice";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.VITE_PROD_URL
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
 const Product = (props) => {
   const dispatch = useDispatch();
@@ -38,7 +38,7 @@ const Product = (props) => {
 
   const handleAddToCart = async () => {
     try {
-      await axios.post(`${BASE_URL}cart/add`, {product_id: productItem._id, price: productItem.price}, {withCredentials: true})
+      await axios.post(`${BASE_URL}/cart/add`, {product_id: productItem._id, price: productItem.price}, {withCredentials: true})
                   .then(result => {
                     console.log(result)
                     if(result.status === 200){

@@ -6,9 +6,7 @@ import axios from 'axios'
 import { toast } from "react-toastify";
 
 const items = paginationItems;
-const BASE_URL = process.env.REACT_APP_SERVER_MODE === "development"
-  ? process.env.REACT_APP_DEV_URL
-  : process.env.REACT_APP_PROD_URL;
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
 function Items({ currentItems }) {
   return (
@@ -79,7 +77,7 @@ const Pagination = ({ itemsPerPage, filters }) => {
       }
 
       const queryString = queryParams.toString();
-      const url = `${BASE_URL}products${queryString ? '?' + queryString : ''}`;
+      const url = `${BASE_URL}/products${queryString ? '?' + queryString : ''}`;
 
       console.log('Fetching products from:', url);
 

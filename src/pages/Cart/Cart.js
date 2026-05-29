@@ -10,7 +10,7 @@ import ItemCard from "./ItemCard";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.REACT_APP_PROD_URL
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -47,7 +47,7 @@ const Cart = () => {
 
   const getCart = async () => {
     try {
-      await axios.get(`${BASE_URL}cart`, {withCredentials: true})
+      await axios.get(`${BASE_URL}/cart`, {withCredentials: true})
                 .then(result => {
                   console.log('result', result)
                   if(result.status === 200){

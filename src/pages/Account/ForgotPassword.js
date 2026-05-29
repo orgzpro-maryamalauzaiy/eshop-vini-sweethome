@@ -6,7 +6,7 @@ import { logoLight } from "../../assets/images";
 import axios from "axios";
 import Cookies from 'js-cookie'
 
-const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.VITE_PROD_URL
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
 const ForgotPassword = () => {
   // ============= Initial State Start here =============
@@ -47,7 +47,7 @@ const ForgotPassword = () => {
     }
     // ============== Getting the value ==============
     if (password && confirm_password) {
-      await axios.patch(`${BASE_URL}auth/reset-password`, {password}, {withCredentials: true})
+      await axios.patch(`${BASE_URL}/auth/reset-password`, {password}, {withCredentials: true})
                   .then(result => {
                     console.log('result', result)
                     if(result.status === 200){

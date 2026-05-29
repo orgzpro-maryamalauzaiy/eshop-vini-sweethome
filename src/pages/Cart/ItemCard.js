@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.REACT_APP_PROD_URL
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
 const ItemCard = ({ item, setIncrease, setDecrease, setRemove }) => {
   const dispatch = useDispatch();
@@ -24,7 +24,7 @@ const ItemCard = ({ item, setIncrease, setDecrease, setRemove }) => {
 
   const handleRemoveItem = async (product_id) => {
     try {
-      await axios.post(`${BASE_URL}cart/remove`, {product_id}, {withCredentials: true})
+      await axios.post(`${BASE_URL}/cart/remove`, {product_id}, {withCredentials: true})
                   .then(result => {
                     console.log(result)
                     if(result.status === 200){

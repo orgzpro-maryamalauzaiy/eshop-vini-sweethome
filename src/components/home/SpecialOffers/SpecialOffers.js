@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const BASE_URL = process.env.REACT_APP_SERVER_MODE == 'development'? process.env.REACT_APP_DEV_URL : process.env.REACT_APP_PROD_URL
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
 const SpecialOffers = () => {
   const [specialoffers, setSpecialOffers] = useState([])
@@ -24,7 +24,7 @@ const SpecialOffers = () => {
 
   const getProductsSpecialOffers = async () => {
     try {
-      await axios.get(`${BASE_URL}products/special-offers`)
+      await axios.get(`${BASE_URL}/products/special-offers`)
                       .then((results) => {
                         console.log('results from special offer: ', results)
                         if(results.status == 200){

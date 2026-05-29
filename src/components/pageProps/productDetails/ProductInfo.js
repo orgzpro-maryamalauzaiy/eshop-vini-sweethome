@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.VITE_PROD_URL
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
 const ProductInfo = ({ productInfo }) => {
   const dispatch = useDispatch();
@@ -14,7 +14,7 @@ const ProductInfo = ({ productInfo }) => {
 
   const handleAddToCart = async () => {
     try {
-      await axios.post(`${BASE_URL}cart/add`, {product_id: productInfo._id, price: productInfo.price}, {withCredentials: true})
+      await axios.post(`${BASE_URL}/cart/add`, {product_id: productInfo._id, price: productInfo.price}, {withCredentials: true})
                   .then(result => {
                     console.log(result)
                     if(result.status === 200){

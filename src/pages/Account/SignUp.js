@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { logoLight } from "../../assets/images";
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.VITE_PROD_URL
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
 const SignUp = () => {
   // ============= Initial State Start here =============
@@ -127,7 +127,7 @@ const SignUp = () => {
         zip
       ) {
 
-        await axios.post(`${BASE_URL}auth/register`, {full_name: clientName, email, password, phone_number, address, city_id, country, zip})
+        await axios.post(`${BASE_URL}/auth/register`, {full_name: clientName, email, password, phone_number, address, city_id, country, zip})
                     .then(result => {
                       console.log('result', result)
                       if(result.status === 200){

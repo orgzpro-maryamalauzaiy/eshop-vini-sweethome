@@ -4,7 +4,7 @@ import Breadcrumbs from "../../components/pageProps/Breadcrumbs";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_DEV_URL : process.env.VITE_PROD_URL
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
 const Profile = () => {
   const location = useLocation();
@@ -41,7 +41,7 @@ const Profile = () => {
 
   const getProfile = async () => {
     try {
-      const result = await axios.get(`${BASE_URL}profile`, { withCredentials: true });
+      const result = await axios.get(`${BASE_URL}/profile`, { withCredentials: true });
       console.log('profile result', result);
       if (result.status === 200) {
         setMe(result.data.data);
@@ -53,7 +53,7 @@ const Profile = () => {
 
   const getCities = async () => {
     try {
-      const result = await axios.get(`${BASE_URL}cities`);
+      const result = await axios.get(`${BASE_URL}/cities`);
       console.log('cities result', result);
       setCities(result.data.data);
     } catch (error) {
@@ -141,7 +141,7 @@ const Profile = () => {
     if (isValid) {
       setIsLoading(true);
       try {
-        const response = await axios.patch(`${BASE_URL}profile`, {
+        const response = await axios.patch(`${BASE_URL}/profile`, {
           full_name: me.full_name,
           email: me.email,
           phone_number: me.phone_number,

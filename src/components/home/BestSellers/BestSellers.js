@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const BASE_URL = process.env.REACT_APP_SERVER_MODE == 'development'? process.env.REACT_APP_DEV_URL : process.env.REACT_APP_PROD_URL
+const BASE_URL = process.env.REACT_APP_SERVER_MODE == 'development'? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
 const BestSellers = () => {
 
@@ -25,7 +25,7 @@ const BestSellers = () => {
 
   const getProductsBestSellers = async () => {
     try {
-      await axios.get(`${BASE_URL}products/best-sellers`)
+      await axios.get(`${BASE_URL}/products/best-sellers`)
                       .then((results) => {
                         console.log('results', results)
                         if(results.status == 200){

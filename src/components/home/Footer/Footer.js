@@ -5,10 +5,11 @@ import FooterListTitle from "./FooterListTitle";
 import { paymentCard } from "../../../assets/images";
 import Image from "../../designLayouts/Image";
 import { toast } from "react-toastify";
-import { BASE_URL } from "../../../server/api";
 import { error } from "../../../redux/authSlice";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+
+const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
 const Footer = () => {
   const [emailInfo, setEmailInfo] = useState("");
@@ -26,7 +27,7 @@ const Footer = () => {
   const getCategories = async (req, res) => {
     try {
 
-      await axios.get(`${BASE_URL}categories`)
+      await axios.get(`${BASE_URL}/categories`)
                   .then(result => {
                     console.log('result', result)
                     if(result.status === 200){
@@ -144,10 +145,10 @@ const Footer = () => {
           </ul>
         </div>
         <div>
-          <FooterListTitle title="Your account" />
+          <FooterListTitle title="Account" />
           <ul className="flex flex-col gap-2">
             <a
-                href="https://www.instagram.com/sweethomee_id/"
+                href={`${BASE_URL}profile`}
                 target="_blank"
                 rel="noreferrer"
               >
@@ -156,7 +157,7 @@ const Footer = () => {
               </li>
               </a>
             <a
-                href="https://www.instagram.com/sweethomee_id/"
+                href={`${BASE_URL}orders`}
                 target="_blank"
                 rel="noreferrer"
               >
@@ -165,7 +166,7 @@ const Footer = () => {
               </li>
             </a>
             <a
-                href="https://www.instagram.com/sweethomee_id/"
+                href={`${BASE_URL}order-history`}
                 target="_blank"
                 rel="noreferrer"
               >
@@ -174,7 +175,7 @@ const Footer = () => {
               </li>
             </a>
             <a
-                href="https://www.instagram.com/sweethomee_id/"
+                href={`${BASE_URL}forgot-password`}
                 target="_blank"
                 rel="noreferrer"
               >
