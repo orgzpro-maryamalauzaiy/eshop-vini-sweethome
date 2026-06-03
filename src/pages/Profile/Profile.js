@@ -14,7 +14,7 @@ const Profile = () => {
     email: "",
     phone_number: "",
     address: "",
-    province_id: "",
+    province: "",
     city_id: "",
     country: "",
     zip: ""
@@ -81,7 +81,7 @@ const Profile = () => {
       case 'address':
         setErrAddresss("");
         break;
-      case 'province_id':
+      case 'province':
         setErrProvince("");
         break;
       case 'city_id':
@@ -146,7 +146,7 @@ const Profile = () => {
           email: me.email,
           phone_number: me.phone_number,
           address: me.address,
-          province_id: me.province_id,
+          province: me.province,
           city_id: me.city_id,
           country: me.country,
           zip: me.zip
@@ -258,8 +258,8 @@ const Profile = () => {
               Province
             </p>
             <input
-              onChange={(e) => handleFormData('province_id', e.target.value)}
-              value={me?.province_id || ''}
+              onChange={(e) => handleFormData('province', e.target.value)}
+              value={me?.province || ''}
               className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor"
               type="text"
               placeholder="Enter province"
@@ -366,7 +366,7 @@ export default Profile;
 //   const [email, setEmail] = useState("");
 //   const [address, setAddress] = useState("");
 //   const [phone_number, setPhoneNumber] = useState("");
-//   const [province_id, setProvinceId] = useState("")
+//   const [province, setProvinceId] = useState("")
 //   const [city_id, setCityId] = useState("");
 //   const [country, setCountry] = useState("");
 //   const [cities, setCities] = useState([]);
@@ -504,7 +504,7 @@ export default Profile;
 //     }
 //     if (me.full_name && me.email && EmailValidation(me.email) && me.address) {
 //       // Here you would typically make an API call to update the profile
-//       await axios.patch(`${BASE_URL}profile`, {full_name: me.full_name, email: me.email, phone_number: me.phone_number, address: me.address, province_id: me.province_id, city_id: me.city_id, country: me.country, zip: me.zip}, {withCredentials: true})
+//       await axios.patch(`${BASE_URL}profile`, {full_name: me.full_name, email: me.email, phone_number: me.phone_number, address: me.address, province: me.province, city_id: me.city_id, country: me.country, zip: me.zip}, {withCredentials: true})
 //                   .then(result => {
 //                     if(result.status == 200){
 //                       //  toast.success('Alhamdulillah, update profile berhasil')

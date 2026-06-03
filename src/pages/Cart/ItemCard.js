@@ -45,7 +45,7 @@ const ItemCard = ({ item, setIncrease, setDecrease, setRemove }) => {
 
   const handleIncreaseQuantity = async (product_id) => {
     try {
-      await axios.post(`${BASE_URL}cart/increase`, {product_id}, {withCredentials: true})
+      await axios.post(`${BASE_URL}/cart/increase`, {product_id}, {withCredentials: true})
                   .then(result => {
                     console.log(result)
                     if(result.status === 200){
@@ -64,7 +64,7 @@ const ItemCard = ({ item, setIncrease, setDecrease, setRemove }) => {
   }
   const handleDecreaseQuantity = async (product_id) => {
     try {
-      await axios.post(`${BASE_URL}cart/decrease`, {product_id}, {withCredentials: true})
+      await axios.post(`${BASE_URL}/cart/decrease`, {product_id}, {withCredentials: true})
                   .then(result => {
                     console.log(result)
                     if(result.status === 200){

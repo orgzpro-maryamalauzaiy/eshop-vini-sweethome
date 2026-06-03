@@ -2,6 +2,7 @@ export const formatIndonesiaDate = (date) => {
       const dayNames = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
       const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
+      // console.log(date)
       date = new Date(date);
       const dayName = dayNames[date.getDay()];
       const day = date.getDate();

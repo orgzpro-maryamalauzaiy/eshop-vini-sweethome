@@ -24,6 +24,7 @@ const NewArrivals = () => {
   useEffect(() => {
     getProductsNewArrivals()
     console.log(new_arrivals)
+    console.log('BASE_URL', BASE_URL)
   }, [])
 
   const getProductsNewArrivals = async () => {

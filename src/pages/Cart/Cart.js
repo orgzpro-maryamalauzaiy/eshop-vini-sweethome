@@ -13,6 +13,7 @@ import axios from "axios";
 const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
 const Cart = () => {
+  const {loading, userEmail} = useSelector(state => state.auth)
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const location = useLocation();
@@ -26,7 +27,7 @@ const Cart = () => {
 
   useEffect(() => {
 
-    if(products.length === 0){
+    if(products.length === 0 && userEmail !== null){
       getCart()
     }
 
@@ -38,14 +39,17 @@ const Cart = () => {
         setTotalAmt(price);
 
     // if(products.length)
-    console.log('products', products)
+    console.log('products', products, userEmail)
+
+
 
     // setPrevLocation(location.state.data)
 
-  }, [products, location]);
+  }, [products, location, userEmail]);
 
 
   const getCart = async () => {
+
     try {
       await axios.get(`${BASE_URL}/cart`, {withCredentials: true})
                 .then(result => {
@@ -82,7 +86,7 @@ const Cart = () => {
   const createInvoice = async () => {
     console.log('products', products)
     try {
-      await axios.post(`${BASE_URL}payments/request-invoices`, {products, total_price: totalAmt, total_amount: totalAmt + shippingCharge, total_discount: 0, admin_fee: 0, promo_code: ''}, {withCredentials: true})
+      await axios.post(`${BASE_URL}/payments/request-invoices`, {products, total_price: totalAmt, total_amount: totalAmt + shippingCharge, total_discount: 0, admin_fee: 0, promo_code: ''}, {withCredentials: true})
       // await axios.post(`${BASE_URL}payments/request-invoices`, {product_id: products[0]._id, amount: products[0].quantity, price: products[0].price, admin_fee: products[0].admin_fee, discount: products[0].discount, promo_code: products[0].promo_code}, {withCredentials: true})
                   .then(result => {
                     console.log('result', result)
@@ -112,7 +116,7 @@ const Cart = () => {
                     }
                   })
                   .catch(error => {
-                    toast.error('Failed, Failed request invoice')
+                    toast.error('Failed, Failed request invoice: ' + error)
                   })
 
     } catch (error) {
@@ -184,9 +188,13 @@ const Cart = () => {
 
   const handleDecrease = ({product_id}) => {
     if(product_id){
-      const decreased_product = products.map(product => product._id = product_id? {_id: product._id, name: product.name, image: product.image, price: product.price, quantity: product.quantity - 1}: "")
+      const decreased_product = products.map(product => product._id == product_id? product.quantity > 1? {_id: product._id, name: product.name, image: product.image, price: product.price, quantity: product.quantity - 1} : "" : "")
 
-      setProducts([...products.filter(product => product !== product_id), ...decreased_product])
+      if(decreased_product != ""){
+        setProducts([...products.filter(product => product._id !== product_id), ...decreased_product])
+      }else{
+        setProducts([])
+      }
 
       // setProducts(products.map(product => product._id = product_id? product.quantity--: ""))
       // products.find(product => product._id = product_id).quantity --
@@ -238,7 +246,7 @@ const Cart = () => {
                 Apply Coupon
               </p>
             </div>
-            <p className="text-lg font-semibold">Update Cart</p>
+            <Link to={"/shop"} className="text-lg font-semibold">Update Cart</Link>
           </div>
           <div className="max-w-7xl gap-4 flex justify-end mt-4">
             <div className="w-96 flex flex-col gap-4">

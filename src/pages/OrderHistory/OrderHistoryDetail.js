@@ -27,7 +27,7 @@ const OrderHistoryDetail = () => {
     console.log('location.state', location.state)
     console.log('id', id)
     getOrderHitory()
-  }, [location, id, order]);
+  }, [location, id]);
 
   const getOrderHitory = async (req, res) => {
     try {
@@ -36,7 +36,7 @@ const OrderHistoryDetail = () => {
                   .then(result => {
                     console.log('result', result)
                     if(result.status == 200){
-                      setOrder({
+                      setOrder(order => ({
                         ...order,
                         invoice_number: result.data.data.invoice_number,
                         total_price: result.data.data.total_price,
@@ -45,24 +45,25 @@ const OrderHistoryDetail = () => {
                         promo_code: result.data.data.promo_code,
                         admin_fee: result.data.data.admin_fee,
                         order_status: result.data.data.order_status
-                      })
+                      }))
                       setOrderItems(result.data.data.items.map(item => ({
-                        _id: result.data.data.item.product_id,
-                        img: result.data.data.item.image,
-                        name: result.data.data.item.name,
-                        slug: result.data.data.item.slug,
-                        price: result.data.data.items.price,
-                        quantity: result.data.data.items.amount,
-                        discount: result.data.data.items.discount,
-                        promo_code: result.data.data.items.promo_code,
-                        admin_fee: result.data.data.items.admin_fee
+                        _id: item.product_id,
+                        img: item.image,
+                        name: item.name,
+                        slug: item.slug,
+                        price: item.price,
+                        quantity: item.amount,
+                        discount: item.discount,
+                        promo_code: item.promo_code,
+                        admin_fee: item.admin_fee
                       })))
                       setPayment({
-                        ...payment,
-                        payment_code: result.data.data.payment.payment_code,
-                        payment_status: result.data.data.payment.payment_status,
-                        bank_code: result.data.data.payment.bank_code,
-                        settlement_date: result.data.data.payment.settlement_date
+                        ...payment, ...result.data.data.payments.map(payment => ({
+                          payment_code: payment.payment_code,
+                          payment_status: payment.payment_status,
+                          bank_code: payment.bank_code,
+                          settlement_date: payment.settlement_date
+                        }))
                       })
                     // result.data.data
 
@@ -113,7 +114,7 @@ const OrderHistoryDetail = () => {
 
                       <div className="flex items-center justify-between gap-4">
                         <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Tanggal Transaksi:</span> {formatIndonesiaDate(order.created_at)}</p>
-                        <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Pemesan:</span> {user.full_name}</p>
+                        {/* <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Pemesan:</span> {user.full_name}</p> */}
                         <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Produk:</span></p>
 
                         <div className="flex items-center justify-end gap-4">

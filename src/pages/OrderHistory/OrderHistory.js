@@ -120,7 +120,7 @@ const OrderHistory = () => {
                   {orders.map(product => (
                     <div className="space-y-4 p-6">
                       <h2 className="text-base font-semibold text-gray-900 dark:text-white sm:text-2xl">
-                        <Link to={`/order-history/${encodeURI(product.invoice_number?.toLowerCase())}`}>
+                        <Link to={`/order-history/${encodeURI(product.invoice_number)}`}>
                           {`Invoice Number #${product.invoice_number}` }
                         </Link>
                       </h2>

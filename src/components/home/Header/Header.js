@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { MdClose } from "react-icons/md";
 import { HiMenuAlt2 } from "react-icons/hi";
 import { motion } from "framer-motion";
@@ -13,6 +14,7 @@ import { BASE_URL } from "../../../server/api";
 import Cookies from 'js-cookie'
 
 const Header = ({user}) => {
+  const {loading, userEmail} = useSelector(state => state.auth)
   const [showMenu, setShowMenu] = useState(true);
   const [sidenav, setSidenav] = useState(false);
   const [navbar_items, setNavbarItems] = useState(navBarList)
@@ -47,10 +49,10 @@ const Header = ({user}) => {
 
     getCategories()
 
-  }, [cookie, user]);
+  }, [cookie, user, userEmail]);
 
   const getNavbarList = () => {
-    if(!user){
+    if(!user || !userEmail){
       const navbars = navBarList.filter(item => item.title !== 'Order History' && item.title !== 'Profile' && item.title !== 'Forgot Password')
       console.log('navbars', navbars, navBarList)
       setNavbarItems(navbars)
@@ -74,7 +76,7 @@ const Header = ({user}) => {
 
   const getCategories = async () => {
     try {
-      await axios.get(`${BASE_URL}categories`)
+      await axios.get(`${BASE_URL}/categories`)
                   .then(result => {
                     console.log(result)
                     if(result.status === 200){

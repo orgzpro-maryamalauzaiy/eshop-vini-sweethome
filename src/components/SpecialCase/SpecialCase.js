@@ -6,15 +6,17 @@ import {RiLoginCircleLine} from "react-icons/ri"
 import { useSelector } from "react-redux";
 
 const SpecialCase = ({user}) => {
+  const {loading, userEmail} = useSelector(state => state.auth)
   const products = useSelector((state) => state.ecommReducer.products);
 
   useEffect(() => {
-    console.log('user from specialcase:', user)
-  }, [user])
+    console.log('user from specialcase:', user, userEmail)
+
+  }, [user, userEmail])
 
   return (
     <div className="fixed top-52 right-2 z-20 hidden md:flex flex-col gap-2">
-      {user ? (
+      {user || userEmail? (
         <Link to="/profile">
           <div className="bg-white w-16 h-[70px] rounded-md flex flex-col gap-1 text-[#33475b] justify-center items-center shadow-testShadow overflow-x-hidden group cursor-pointer">
             <div className="flex justify-center items-center">

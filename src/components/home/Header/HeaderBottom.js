@@ -15,6 +15,7 @@ import { logout } from "../../../redux/authSlice";
 const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
 const HeaderBottom = ({user}) => {
+  const {loading, userEmail} = useSelector(state => state.auth)
   const products = useSelector((state) => state.ecommReducer.products);
   const [items, setItems] = useState([])
   const [show, setShow] = useState(false);
@@ -56,7 +57,7 @@ const HeaderBottom = ({user}) => {
       console.log('user from header bottom', user)
     }
 
-  }, [searchQuery, user]);
+  }, [searchQuery, user, userEmail]);
 
   const getExistingProduct = async () => {
     try {
@@ -210,7 +211,7 @@ const HeaderBottom = ({user}) => {
                     Daftar
                   </li>
                 </Link> */}
-                {user? (
+                {user || userEmail? (
                   <>
                     <Link to={'/profile'}>
                       <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer"

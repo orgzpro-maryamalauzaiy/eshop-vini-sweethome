@@ -57,6 +57,34 @@ export const login = createAsyncThunk(
     // return res
 })
 
+export const getSession = createAsyncThunk(
+  '/auth/session',
+  async (data) => {
+    await axios.get(`${BASE_URL}/auth/session`, {withCredentials: true})
+          .then(result => {
+            console.log('result', result.data.data.session)
+
+            if(!result.data.data.sesion){
+              initialState.userEmail = null
+              initialState.userInfo = null
+            }
+
+            return result.data.data
+
+          })
+          .catch(error => {
+            // console.log(error)
+            // toast('Afwan, Error ketika login.')
+            // this.state.error = true
+            // this.state.errorMessage = 'Persist login error: ' + error
+
+          })
+    // const res = await fetch(`${BASE_URL}/api/auth/login`).then(
+    //   (data) => data.json()
+    // )
+    // return res
+})
+
 
 // export const postSlice = createSlice({
 //   name: 'posts',
@@ -207,6 +235,28 @@ export const authSlice = createSlice({
         state.loading = true
       },
       login.rejected, (state, action) => {
+        state.error = true
+        state.loading = false
+      },
+      getSession.fulfilled, (state, action) => {
+        state.error = false
+        state.loading = false
+        console.log('action.payload', action)
+        // // Cookies.set('token', action.payload.token)
+        if(!action.data.data.session){
+          state.userEmail = null
+          state.userInfo = null
+        }
+        // state.orgzInfo = {
+        //   orgz_id: action.payload.orgz_id,
+        //   org_name: action.payload.orgz_name,
+        // }
+        // state.orgzId = action.payload.orgz_id
+      },
+      getSession.pending, (state, action) => {
+        state.loading = true
+      },
+      getSession.rejected, (state, action) => {
         state.error = true
         state.loading = false
       }

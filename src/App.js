@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Outlet,
-  createRoutesFromElements,
-  ScrollRestoration,
-  useNavigate,
-} from "react-router-dom";
-import {  BrowserRouter as Router, Routes, Route} from "react-router-dom";
+// import {
+//   createBrowserRouter,
+//   RouterProvider,
+//   Outlet,
+//   createRoutesFromElements,
+//   ScrollRestoration,
+// } from "react-router-dom";
+// import {useNavigate} from "react-router"
+import {  BrowserRouter as Router, Routes, Route, useNavigate, Outlet} from "react-router-dom";
 import Footer from "./components/home/Footer/Footer";
 import FooterBottom from "./components/home/Footer/FooterBottom";
 import Header from "./components/home/Header/Header";
@@ -88,12 +88,20 @@ function App() {
   const {loading, userEmail} = useSelector(state => state.auth)
   const [userInfo, setUserInfo] = useState("")
   // const token = Cookies.get('token')
+  // const navigate = useNavigate()
 
   useEffect(() => {
     if(!loading && userEmail){
       console.log('userEmail', userEmail, loading)
       setUserInfo(userEmail)
+      // navigate('/')
     }
+
+    // if(!userEmail){
+    //   navigate('/login')
+    // }
+
+
 
   },[userEmail])
 
