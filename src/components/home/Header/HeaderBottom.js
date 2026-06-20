@@ -89,12 +89,12 @@ const HeaderBottom = ({user}) => {
 
   const handleLogout = async () => {
     try {
-      await axios.post(`${BASE_URL}auth/logout`, {}, {withCredentials: true})
+      await axios.post(`${BASE_URL}/auth/logout`, {}, {withCredentials: true})
                   .then(result => {
                     console.log('result', result)
                     if(result.status == 200){
                       toast.success('Logout successfully.')
-                      dispatch(logout)
+                      dispatch(logout())
                       navigate('/')
                     }
                   })

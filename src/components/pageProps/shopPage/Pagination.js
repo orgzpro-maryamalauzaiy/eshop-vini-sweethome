@@ -22,6 +22,7 @@ function Items({ currentItems }) {
               color={item.bgColor}
               badge={item.badge}
               des={item.description}
+              variations={item.variations}
             />
           </div>
         ))}
@@ -39,6 +40,8 @@ const Pagination = ({ itemsPerPage, filters }) => {
   // Fetch products when filters change
   useEffect(() => {
     getProducts();
+
+    console.log('products', products)
   }, [filters]); // Only depend on filters, not products
 
   const getProducts = async () => {
@@ -86,6 +89,8 @@ const Pagination = ({ itemsPerPage, filters }) => {
       if (result.status === 200) {
         // Assuming API returns { data: products[], total?: number }
         const productsData = result.data.data || result.data.products || result.data;
+
+        console.log('product', productsData)
         setProducts(productsData);
         setTotalProducts(productsData.length || result.data.total || 0);
 

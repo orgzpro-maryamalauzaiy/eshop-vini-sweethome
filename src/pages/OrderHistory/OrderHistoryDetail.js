@@ -57,14 +57,14 @@ const OrderHistoryDetail = () => {
                         promo_code: item.promo_code,
                         admin_fee: item.admin_fee
                       })))
+                    console.log('payment', result.data.data.payment)
                       setPayment({
-                        ...payment, ...result.data.data.payments.map(payment => ({
-                          payment_code: payment.payment_code,
-                          payment_status: payment.payment_status,
-                          bank_code: payment.bank_code,
-                          settlement_date: payment.settlement_date
-                        }))
-                      })
+                          payment_code: result.data.data.payment.payment_code,
+                          payment_status: result.data.data.payment.payment_status,
+                          bank_code: result.data.data.payment.bank_code,
+                          settlement_date: result.data.data.payment.settlement_date,
+                          payment_url: result.data.data.payment.payment_url
+                        })
                     // result.data.data
 
                     }
@@ -73,6 +73,10 @@ const OrderHistoryDetail = () => {
     } catch (error) {
       toast.error('Error get order histories: ' + error)
     }
+  }
+
+  const handleRedirectPaymentURL = () => {
+    window.location.href = payment.payment_url
   }
 
   const formatCurrency = (amount: number) => {
@@ -88,12 +92,13 @@ const OrderHistoryDetail = () => {
       <Breadcrumbs title="Order History" prevLocation={prevLocation} />
       <div className="pb-10">
         <h1 className="max-w-[600px] text-base text-lightText mb-2">
-          <span className="text-primeColor font-semibold text-lg">SweetHome</span>{" "}
+          {/* <span className="text-primeColor font-semibold text-lg">SweetHome</span>{" "} */}
           {/* is one of the world's leading ecommerce brands and is internationally
           recognized for celebrating the essence of classNameic Worldwide muslimah fashion
           looking style. */}
         </h1>
-        <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700">Order History</div>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white sm:text-2xl">Order History</h2>
+        {/* <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700">Order History</div> */}
         {/* lg:max-w-xl xl:max-w-2xl */}
         {order && (
             <div className="w-full h-auto py-6 flex flex-col gap-6">
@@ -101,7 +106,7 @@ const OrderHistoryDetail = () => {
               <div className="mt-6 sm:mt-8 lg:flex lg:gap-8">
                 <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700">
                     <div className="space-y-4 p-6">
-                      <h2 className="text-lg font-semibold text-gray-900 dark:text-white sm:text-2xl">{`Invoice Number #${order.invoice_number}` } </h2>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white sm:text-2xl">{`Invoice Number #${order.invoice_number || '-'}` } </h3>
                       <div className="flex items-center gap-6">
                         <a href="#" className="h-14 w-14 shrink-0">
                           <img className="h-full w-full dark:hidden" src={order.image} alt="" />
@@ -113,14 +118,14 @@ const OrderHistoryDetail = () => {
                       </div>
 
                       <div className="flex items-center justify-between gap-4">
-                        <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Tanggal Transaksi:</span> {formatIndonesiaDate(order.created_at)}</p>
+                        <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Tanggal Transaksi:</span> {order.created_at?formatIndonesiaDate(order.created_at): '-'}</p>
                         {/* <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Pemesan:</span> {user.full_name}</p> */}
                         <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Produk:</span></p>
 
                         <div className="flex items-center justify-end gap-4">
-                          <p className="text-base font-normal text-gray-900 dark:text-white">{`${order.total_amount} item`} </p>
+                          <p className="text-base font-normal text-gray-900 dark:text-white">{`${order.total_amount || 0} item`} </p>
 
-                          <p className="text-xl font-bold leading-tight text-gray-900 dark:text-white">{formatCurrency(order.total_price)}</p>
+                          <p className="text-xl font-bold leading-tight text-gray-900 dark:text-white">{formatCurrency(order.total_price || 0)}</p>
                         </div>
                       </div>
                       <div className="pb-20">
@@ -145,7 +150,7 @@ const OrderHistoryDetail = () => {
                               <p className="flex items-center justify-between border-[1px] border-gray-400 border-b-0 py-1.5 text-lg px-4 font-medium">
                                 Subtotal
                                 <span className="font-semibold tracking-wide font-titleFont">
-                                  {formatCurrency(order.total_amount)}
+                                  {formatCurrency(order.total_amount || 0)}
                                 </span>
                               </p>
                               {/* <p className="flex items-center justify-between border-[1px] border-gray-400 border-b-0 py-1.5 text-lg px-4 font-medium">
@@ -157,13 +162,13 @@ const OrderHistoryDetail = () => {
                               <p className="flex items-center justify-between border-[1px] border-gray-400 border-b-0 py-1.5 text-lg px-4 font-medium">
                                 Admin Fee
                                 <span className="font-semibold tracking-wide font-titleFont">
-                                  {formatCurrency(order.admin_fee)}
+                                  {formatCurrency(order.admin_fee || 0)}
                                 </span>
                               </p>
                               <p className="flex items-center justify-between border-[1px] border-gray-400 py-1.5 text-lg px-4 font-medium">
                                 Total
                                 <span className="font-bold tracking-wide text-lg font-titleFont">
-                                  {formatCurrency(order.total_amount + order.admin_fee)}
+                                  {formatCurrency(order.total_amount + order.admin_fee || 0 )}
                                 </span>
                               </p>
                             </div>
@@ -183,7 +188,7 @@ const OrderHistoryDetail = () => {
                       </div> */}
 
                       <div className="flex items-center justify-between gap-4">
-                        <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Tanggal Transaksi:</span> {order.created_at}</p>
+                        {/* <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Tanggal Transaksi:</span> {order.created_at}</p> */}
 
                         <div className="flex items-center justify-end gap-4">
                           <p className="text-base font-normal text-gray-900 dark:text-white">{`${order.total_amount} item`} </p>
@@ -199,34 +204,56 @@ const OrderHistoryDetail = () => {
             </div>
             )
             }
-        <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700 lg:max-w-xl xl:max-w-2xl">Informasi Pembayaran</div>
-            <div className="w-full h-auto py-6 flex flex-col gap-6">
+        <div className="text-lg font-semibold text-gray-900 dark:text-white sm:text-2xl my-3">Informasi Pembayaran</div>
+        {/* <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700 lg:max-w-xl xl:max-w-2xl">Informasi Pembayaran</div> */}
+            <div className="w-full h-auto flex flex-col gap-6">
 
               <div className="mt-6 sm:mt-8 lg:flex lg:gap-8">
                 <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700 lg:max-w-xl xl:max-w-2xl">
                   {/* {order.map(product => ( */}
                     <div className="space-y-4 p-6">
-                      <h2 className="text-lg font-semibold text-gray-900 dark:text-white sm:text-2xl">{`Status Pembayaran` } <span className={`${payment.status == 'successed'? 'bg-green-400 border-sm rounded-sm border-green-600 text-gray-500' : payment.status == 'pending'?'bg-gray-400 border-sm rounded-sm border-gray-600 text-gray-500' : payment.status == 'waiting'? 'bg-yellow-400 border-sm rounded-sm border-yellow-600 text-gray-500' : payment.payment_status == 'failed'? 'bg-red-400 border-sm rounded-sm border-red-600 text-gray-500' : ''}`}> {`${payment.payment_status === 'successed' ? "Complete" : payment.payment_status === 'pending' ? '-' : payment.payment_status === 'waiting' ? 'Menunggu Pembayaran' : payment.payment_status === 'failed'? 'Gagal': ''}`} </span> </h2>
+                      <div className="flex justify-between mb-3">
+                        <h5 className="flex items-center text-center text-base font-semibold text-gray-900 dark:text-white sm:text-xl">{`Status Pembayaran` }  </h5>
+                        <span className={`flex items-center text-center justify-end rounded rouded-4xl px-4 py-2 text-sm ${payment.payment_status == 'successed' || payment.payment_status == 'settlement'? 'bg-green-400 border-sm rounded-3xl border-green-600 text-gray-500' : payment.payment_status == 'pending'?'bg-yellow-500 border-sm rounded-2xl border-yellow-600 text-gray-100' : payment.status == 'waiting'? 'bg-yellow-400 border-sm rounded-sm border-yellow-600 text-gray-500' : payment.payment_status == 'failed'? 'bg-red-400 border-sm rounded-sm border-red-600 text-gray-500' : ''}`}> {`${payment.payment_status === 'successed' || payment.payment_status === 'settlement' ? "Complete" : payment.payment_status === 'pending' ? 'Menunggu Pembayaran' : payment.payment_status === 'waiting' ? 'Menunggu Pembayaran' : payment.payment_status === 'failed'? 'Gagal': ''}`} </span>
+                      </div>
+
+                      {/* <div className="flex items-center justify-between gap-4">
+                        <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white"></span></p>
+
+                        <div className="flex items-center justify-end gap-4">
+                          <p className="text-base font-normal text-gray-900 dark:text-white">{payment.payment_code || '-'} </p>
+                        </div>
+                      </div> */}
+                      {(payment?.payment_status == 'pending' || payment?.payment_status == 'waiting') &&  (
+                        <div className="flex items-center justify-end">
+
+                          <a type="button" target="_blank" href={payment?.payment_url} className="rounded rouded-4xl bg-orange-500 text-white py-3 px-4 font-normal mt-5" >Bayar Sekarang</a>
+                          {/* <button type="button" onClick={handleRedirectPaymentURL}>Bayar Sekarang</button> */}
+                          {/* <Link to={{pathname: payment[0].payment_url, target: "_blank"}}>Bayar Sekarang</Link> */}
+                        </div>
+
+                      )}
+                      <div className="border-b border-gray-500"></div>
 
                       <div className="flex items-center justify-between gap-4">
                         <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Metode Pembayaran:</span></p>
 
                         <div className="flex items-center justify-end gap-4">
-                          <p className="text-base font-normal text-gray-900 dark:text-white">{payment.payment_code} </p>
+                          <p className="text-base font-normal text-gray-900 dark:text-white">{payment.payment_code?payment.payment_code.replace("_", " ")?.toUpperCase(): "-"} </p>
                         </div>
                       </div>
                       <div className="flex items-center justify-between gap-4">
                         <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Bank:</span></p>
 
                         <div className="flex items-center justify-end gap-4">
-                          <p className="text-base font-normal text-gray-900 dark:text-white">{payment.bank_code} </p>
+                          <p className="text-base font-normal text-gray-900 dark:text-white">{payment.bank_code || "-"} </p>
                         </div>
                       </div>
                       <div className="flex items-center justify-between gap-4">
                         <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Tanggal Pembayaran:</span></p>
 
                         <div className="flex items-center justify-end gap-4">
-                          <p className="text-base font-normal text-gray-900 dark:text-white">{formatIndonesiaDate(payment.settlement_date)} </p>
+                          <p className="text-base font-normal text-gray-900 dark:text-white">{payment.settlement_date?formatIndonesiaDate(payment.settlement_date):"-"} </p>
                         </div>
                       </div>
                     </div>

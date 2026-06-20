@@ -34,14 +34,15 @@ const OrderHistory = () => {
     try {
 
       if(date_range){
-        console.log('date_range', date_range[0].day)
+        console.log('date_range', date_range)
+        console.log('date_range day', date_range[0].day, date_range[0].year, date_range[0].month.number)
 
         const queryParams = new URLSearchParams()
 
         // const [from, to] = date_range;
 
-        const from = date_range[0].year + '-' + date_range[0].month + '-' + date_range[0].day
-        const to = date_range[1].year + '-' + date_range[1].month + '-' + date_range[1].day
+        const from = date_range[0].year + '-' + date_range[0].month.number + '-' + date_range[0].day
+        const to = date_range[1].year + '-' + date_range[1].month.number + '-' + date_range[1].day
 
         if (from && to) {
           queryParams.append('from', from);
@@ -60,7 +61,7 @@ const OrderHistory = () => {
       // const queryParams
 
       }else{
-        await axios.get(`${BASE_URL}histories`, {withCredentials: true})
+        await axios.get(`${BASE_URL}/histories`, {withCredentials: true})
                     .then(result => {
                       console.log('result', result)
                       if(result.status == 200){

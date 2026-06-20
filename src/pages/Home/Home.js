@@ -21,7 +21,7 @@ const Home = ({user}) => {
     }
 
     if(!userEmail){
-      navigate('/login')
+      // navigate('/login')
     }
 
   }, [user, userEmail])

@@ -35,7 +35,8 @@ import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from 'js-cookie'
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { resetInfo } from "./redux/authSlice";
 
 let useruser = ""
 
@@ -71,7 +72,7 @@ const Layout = ({user}) => {
       <Outlet user={user} />
       <Footer user={user} />
       <FooterBottom  user={user} />
-      <ToastContainer />
+      <ToastContainer style={{zIndex: 1000}} hideProgressBar={true}/>
     </div>
   );
 };
@@ -87,7 +88,9 @@ function App() {
 
   const {loading, userEmail} = useSelector(state => state.auth)
   const [userInfo, setUserInfo] = useState("")
-  // const token = Cookies.get('token')
+  const [session, setSession] = useState("")
+  const dispatch = useDispatch()
+  const token = Cookies.get('token')
   // const navigate = useNavigate()
 
   useEffect(() => {
@@ -97,13 +100,64 @@ function App() {
       // navigate('/')
     }
 
+    if(!token){
+      dispatch(resetInfo())
+
+    }else{
+      getSession()
+    }
+
+
+
     // if(!userEmail){
     //   navigate('/login')
     // }
 
 
 
-  },[userEmail])
+  },[userEmail, token])
+
+  const getSession = async () => {
+    try {
+
+      await axios.get(`${BASE_URL}/auth/session`, {withCredentials: true})
+          .then(result => {
+            console.log('result in session', result.data)
+
+            if(result.status === 200){
+              console.log('in fulfilled')
+              // initialState.userEmail = result.data.session.email
+              // initialState.userInfo = {
+              //   username: result.data.session.email
+              // }
+
+            }else{
+              console.log('in error')
+              dispatch(resetInfo())
+              toast.error('Gagal, Session kadaluarsa.')
+
+            }
+
+            return result.data.session
+
+          })
+          .catch(error => {
+            console.log('in error', error)
+            dispatch(resetInfo())
+
+            toast.error('Gagal, Session kadaluarsa.')
+
+          })
+
+    } catch (error) {
+
+      console.log('in error', error)
+      dispatch(resetInfo())
+
+      toast.error('Gagal, Session kadaluarsa.')
+
+    }
+  }
 
   return (
     <div className="font-bodyFont">

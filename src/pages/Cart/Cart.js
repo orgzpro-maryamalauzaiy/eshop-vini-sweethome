@@ -22,6 +22,7 @@ const Cart = () => {
   const [products, setProducts] = useState([])
   const [snap, setSnap] = useState(window.snap || "")
   const [totalAmt, setTotalAmt] = useState("");
+  const [totalQty, setTotalQty] = useState("")
   const [shippingCharge, setShippingCharge] = useState(0);
 
 
@@ -32,11 +33,19 @@ const Cart = () => {
     }
 
     let price = 0;
-        products.map((item) => {
-          price += item.price * item.quantity;
-          return price;
-        });
-        setTotalAmt(price);
+    let qty = 0
+
+    products.map((item) => {
+      price += item.price * item.quantity;
+      return price;
+    });
+    setTotalAmt(price);
+
+    for(let i = 0; i< products.length; i++){
+      qty += products[i].quantity
+    }
+    setTotalQty(qty)
+
 
     // if(products.length)
     console.log('products', products, userEmail)
@@ -86,7 +95,7 @@ const Cart = () => {
   const createInvoice = async () => {
     console.log('products', products)
     try {
-      await axios.post(`${BASE_URL}/payments/request-invoices`, {products, total_price: totalAmt, total_amount: totalAmt + shippingCharge, total_discount: 0, admin_fee: 0, promo_code: ''}, {withCredentials: true})
+      await axios.post(`${BASE_URL}/payments/request-invoices`, {products, total_price: totalAmt + shippingCharge, total_amount: totalQty, total_discount: 0, admin_fee: 0, promo_code: ''}, {withCredentials: true})
       // await axios.post(`${BASE_URL}payments/request-invoices`, {product_id: products[0]._id, amount: products[0].quantity, price: products[0].price, admin_fee: products[0].admin_fee, discount: products[0].discount, promo_code: products[0].promo_code}, {withCredentials: true})
                   .then(result => {
                     console.log('result', result)
@@ -145,7 +154,7 @@ const Cart = () => {
 
   const handleResetCart = async () => {
     try {
-      await axios.delete(`${BASE_URL}cart/reset`, {withCredentials: true})
+      await axios.delete(`${BASE_URL}/cart/reset`, {withCredentials: true})
                   .then(result => {
                     console.log(result)
                     if(result.status === 200){
@@ -164,7 +173,8 @@ const Cart = () => {
 
   const handleRemove = ({product_id}) => {
     if(product_id){
-      setProducts(products.filter(product => product._id != product_id))
+      const new_products = products.filter(product => product._id != product_id)
+      setProducts(new_products)
     }
   }
 

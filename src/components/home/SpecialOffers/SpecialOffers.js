@@ -56,6 +56,7 @@ const SpecialOffers = () => {
             color={product.color}
             badge={true}
             des={product.description}
+            variations={product.variations}
           />
 
         )

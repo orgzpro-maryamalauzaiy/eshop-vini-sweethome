@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { logoLight } from "../../assets/images";
+import { toast } from "react-toastify";
 import axios from "axios";
 
 const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
@@ -35,6 +36,22 @@ const SignUp = () => {
   const [errorMsg, setErrMsg] = useState("");
   // ============= Event Handler Start here =============
   const navigate = useNavigate()
+
+  useEffect(() => {
+
+    getCities()
+
+  }, [])
+
+  const getCities = async () => {
+    try {
+      const result = await axios.get(`${BASE_URL}/cities`);
+      console.log('cities result', result);
+      setCities(result.data.data);
+    } catch (error) {
+      toast.error('Failed get cities: ' + (error.response?.data?.message || error.message));
+    }
+  }
 
   const handleName = (e) => {
     setClientName(e.target.value);
@@ -443,7 +460,7 @@ const SignUp = () => {
                       : "bg-gray-500 hover:bg-gray-500 hover:text-gray-200 cursor-none"
                   } w-full text-gray-200 text-base font-medium h-10 rounded-md hover:text-white duration-300`}
                 >
-                  Buat akun
+                  Daftar
                 </button>
                 <p className="text-sm text-center font-titleFont font-medium">
                   Sudah punya akun?{" "}

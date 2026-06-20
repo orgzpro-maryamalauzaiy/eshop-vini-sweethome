@@ -22,12 +22,21 @@ const LOCAL_URL = process.env.REACT_APP_LOCAL_URL
 
 export const login = createAsyncThunk(
   '/auth/login',
-  async (data) => {
+  async (data, {rejectWithValue}) => {
     await axios.post(`${BASE_URL}/auth/login`, data)
           .then(result => {
             console.log('result', result.data.data)
-            Cookies.set('token', result.data.data.token)
-            return result.data.data
+
+            if(result.status === 200){
+              console.log('in status 200')
+              Cookies.set('token', result.data.data.token)
+
+              return result.data.data
+            }else{
+              rejectWithValue("User or password wrong")
+            }
+
+
             // if(result.status === 200){
 
             //   // Cookies.set('token', result.data.data.token)
@@ -45,10 +54,11 @@ export const login = createAsyncThunk(
             // }
           })
           .catch(error => {
-            // console.log(error)
+            console.log(error)
             // toast('Afwan, Error ketika login.')
             // this.state.error = true
             // this.state.errorMessage = 'Persist login error: ' + error
+            return rejectWithValue("User or password wrong")
 
           })
     // const res = await fetch(`${BASE_URL}/api/auth/login`).then(
@@ -59,24 +69,42 @@ export const login = createAsyncThunk(
 
 export const getSession = createAsyncThunk(
   '/auth/session',
-  async (data) => {
+  async (payload, {rejectWithValue}) => {
     await axios.get(`${BASE_URL}/auth/session`, {withCredentials: true})
           .then(result => {
-            console.log('result', result.data.data.session)
+            console.log('result in session', result.data)
 
-            if(!result.data.data.sesion){
+            if(result.status === 200){
+              console.log('in fulfilled')
+              initialState.userEmail = result.data.session.email
+              initialState.userInfo = {
+                username: result.data.session.email
+              }
+
+            }else{
+              console.log('in error')
               initialState.userEmail = null
-              initialState.userInfo = null
+              initialState.userInfo = {
+                username: null
+              }
+
+              console.log('in reject')
+              toast.error('Gagal, Session kadaluarsa.')
+              return rejectWithValue("Session expired")
             }
 
-            return result.data.data
+            return result.data.session
 
           })
           .catch(error => {
-            // console.log(error)
-            // toast('Afwan, Error ketika login.')
-            // this.state.error = true
-            // this.state.errorMessage = 'Persist login error: ' + error
+            console.log('in error', error)
+
+            // initialState.userEmail = null
+            // initialState.userInfo = null
+
+            console.log('in reject')
+            // toast.error('Gagal, Session kadaluarsa.')
+            return rejectWithValue("Session expired")
 
           })
     // const res = await fetch(`${BASE_URL}/api/auth/login`).then(
@@ -158,6 +186,7 @@ export const authSlice = createSlice({
     },
     resetInfo: (state, action) => {
         state.userInfo = null
+        state.userEmail = null
         state.orgzInfo = null
         Cookies.remove('token')
     },
@@ -239,6 +268,7 @@ export const authSlice = createSlice({
         state.loading = false
       },
       getSession.fulfilled, (state, action) => {
+        console.log('in fulfilled')
         state.error = false
         state.loading = false
         console.log('action.payload', action)
@@ -254,11 +284,15 @@ export const authSlice = createSlice({
         // state.orgzId = action.payload.orgz_id
       },
       getSession.pending, (state, action) => {
+        console.log('in pending')
         state.loading = true
       },
       getSession.rejected, (state, action) => {
+        console.log('in rejected')
         state.error = true
         state.loading = false
+        state.userEmail = null
+        state.userInfo = null
       }
     )
   }

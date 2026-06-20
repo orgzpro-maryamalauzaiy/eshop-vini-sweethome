@@ -6,7 +6,7 @@ import { MdOutlineLabelImportant } from "react-icons/md";
 import Image from "../../designLayouts/Image";
 import Badge from "./Badge";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../../redux/ecommSlice";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -14,6 +14,7 @@ import axios from "axios";
 const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
 const Product = (props) => {
+  const {userEmail} = useSelector(state => state.auth)
   const dispatch = useDispatch();
   const _id = props.slug;
   const idString = (_id) => {
@@ -38,6 +39,12 @@ const Product = (props) => {
 
   const handleAddToCart = async () => {
     try {
+
+      if(!userEmail){
+        toast.error("Anda belum login, Silakan login terlebih dahulu.")
+        return
+      }
+
       await axios.post(`${BASE_URL}/cart/add`, {product_id: productItem._id, price: productItem.price}, {withCredentials: true})
                   .then(result => {
                     console.log(result)
@@ -65,7 +72,7 @@ const Product = (props) => {
 
   return (
     <div className="w-full relative group">
-      <div className="max-w-80 max-h-80 relative overflow-y-hidden ">
+      <div className="max-w-80 max-h-100 relative overflow-y-hidden ">
         <div>
           <Image className="w-full h-full" imgSrc={props.img} />
         </div>
@@ -80,29 +87,32 @@ const Product = (props) => {
                 <GiReturnArrow />
               </span>
             </li> */}
-            <li
-              onClick={handleAddToCart
-                // () =>
-                // dispatch(
-                //   addToCart({
-                //     _id: props._id,
-                //     name: props.productName,
-                //     quantity: 1,
-                //     image: props.img,
-                //     badge: props.badge,
-                //     price: props.price,
-                //     colors: props.color,
-                //   })
-                // )
+            {productItem.variations.length === 0 && (
+              <li
+                onClick={handleAddToCart
+                  // () =>
+                  // dispatch(
+                  //   addToCart({
+                  //     _id: props._id,
+                  //     name: props.productName,
+                  //     quantity: 1,
+                  //     image: props.img,
+                  //     badge: props.badge,
+                  //     price: props.price,
+                  //     colors: props.color,
+                  //   })
+                  // )
 
-              }
-              className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full"
-            >
-              Add to Cart
-              <span>
-                <FaShoppingCart />
-              </span>
-            </li>
+                }
+                className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full"
+              >
+                Add to Cart
+                <span>
+                  <FaShoppingCart />
+                </span>
+              </li>
+
+            )}
             <li
               onClick={handleProductDetails}
               className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full"

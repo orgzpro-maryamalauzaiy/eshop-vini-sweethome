@@ -95,6 +95,7 @@ const NewArrivals = () => {
               color={product.colors}
               badge={true}
               des={product.description}
+              variations={product.variations}
             />
 
           ))}
