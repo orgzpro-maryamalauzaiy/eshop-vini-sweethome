@@ -7,11 +7,11 @@ import axios from "axios";
 import Cookies from 'js-cookie'
 import { login } from "../../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
-const SignIn = () => {
+const SignIn = ({user}) => {
   const [cookie, SetCookie] = useState("")
 
   const {userEmail, error, loading} = useSelector(state => state.auth)
@@ -42,9 +42,13 @@ const SignIn = () => {
       navigate('/')
     }
 
-    console.log('userEmail', userEmail)
+    if(error && !userEmail){
+      toast.error("Gagal, login gagal.")
+    }
 
-  }, [cookie, userEmail])
+    console.log('userEmail', userEmail, error, loading)
+
+  }, [cookie, userEmail, error, loading, user])
 
   const getCookie = () => {
     const token = Cookies.get('token')

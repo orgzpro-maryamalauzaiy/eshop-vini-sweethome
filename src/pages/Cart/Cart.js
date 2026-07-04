@@ -9,11 +9,13 @@ import { emptyCart } from "../../assets/images/index";
 import ItemCard from "./ItemCard";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { proceedCheckout } from '../../redux/ecommSlice'
 
 const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.env.REACT_APP_API_DEV_URL : process.env.REACT_APP_API_PROD_URL
 
 const Cart = () => {
   const {loading, userEmail} = useSelector(state => state.auth)
+  const uni = localStorage.getItem("uni")
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const location = useLocation();
@@ -28,7 +30,7 @@ const Cart = () => {
 
   useEffect(() => {
 
-    if(products.length === 0 && userEmail !== null){
+    if(products.length === 0 && (userEmail !== null || uni)){
       getCart()
     }
 
@@ -60,7 +62,7 @@ const Cart = () => {
   const getCart = async () => {
 
     try {
-      await axios.get(`${BASE_URL}/cart`, {withCredentials: true})
+      await axios.get(`${BASE_URL}/cart`, {headers: {"UNI" : uni || ""}}, {withCredentials: true} )
                 .then(result => {
                   console.log('result', result)
                   if(result.status === 200){
@@ -91,6 +93,14 @@ const Cart = () => {
   //     // 20
   //   }
   // }, [totalAmt]);
+
+  const handleCheckout = () => {
+
+    dispatch(proceedCheckout(products))
+
+    navigate("/checkout")
+
+  }
 
   const createInvoice = async () => {
     console.log('products', products)
@@ -290,7 +300,7 @@ const Cart = () => {
               <div className="flex justify-end">
                 {/* <Link to="/paymentgateway"> */}
                   <button className="w-52 h-10 bg-primeColor text-white hover:bg-black duration-300"
-                  onClick={createInvoice}
+                  onClick={handleCheckout}
                   >
                     Proceed to Checkout
                   </button>

@@ -31,8 +31,11 @@ export const login = createAsyncThunk(
               console.log('in status 200')
               Cookies.set('token', result.data.data.token)
 
+              toast.success("Berhasil, Anda berhasil login")
+
               return result.data.data
             }else{
+              toast.error("Gagal, login gagal.")
               rejectWithValue("User or password wrong")
             }
 
@@ -249,11 +252,18 @@ export const authSlice = createSlice({
         state.loading = false
         console.log('action.payload', action)
         // // Cookies.set('token', action.payload.token)
-        state.userInfo = {
-          username: action.meta.arg.username
-          // full_name: action.meta.full_name,
+
+        const token = Cookies.get('token')
+
+        if(token){
+          state.userInfo = {
+            username: action.meta.arg.username
+            // full_name: action.meta.full_name,
+          }
+          state.userEmail = action.meta.arg.username
+        }else{
+          state.error = true
         }
-        state.userEmail = action.meta.arg.username
         // state.orgzInfo = {
         //   orgz_id: action.payload.orgz_id,
         //   org_name: action.payload.orgz_name,

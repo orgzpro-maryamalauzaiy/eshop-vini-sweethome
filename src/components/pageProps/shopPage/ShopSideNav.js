@@ -8,7 +8,7 @@ const ShopSideNav = ({filters, getFilters}) => {
   return (
     <div className="w-full flex flex-col gap-6">
       <Category icons={false} filters={filters} getFilters={getFilters} />
-      <Color filters={filters} getFilter={getFilters} />
+      {/* <Color filters={filters} getFilter={getFilters} /> */}
       <Brand filters={filters} getFilters={getFilters} />
       <Price filters={filters} getFilters={getFilters} />
     </div>

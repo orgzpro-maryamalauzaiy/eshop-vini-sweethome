@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { BsSuitHeartFill } from "react-icons/bs";
 import { GiReturnArrow } from "react-icons/gi";
 import { FaShoppingCart } from "react-icons/fa";
@@ -15,6 +15,7 @@ const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.e
 
 const Product = (props) => {
   const {userEmail} = useSelector(state => state.auth)
+
   const dispatch = useDispatch();
   const _id = props.slug;
   const idString = (_id) => {
@@ -27,6 +28,7 @@ const Product = (props) => {
   const rootId = idString(_id);
 
   const navigate = useNavigate();
+  const [uni, setUni] = useState(localStorage.getItem('uni') || "")
   const productItem = props;
 
   const handleProductDetails = () => {
@@ -40,15 +42,18 @@ const Product = (props) => {
   const handleAddToCart = async () => {
     try {
 
-      if(!userEmail){
-        toast.error("Anda belum login, Silakan login terlebih dahulu.")
-        return
-      }
+      // if(!userEmail){
+      //   toast.error("Anda belum login, Silakan login terlebih dahulu.")
+      //   return
+      // }
 
-      await axios.post(`${BASE_URL}/cart/add`, {product_id: productItem._id, price: productItem.price}, {withCredentials: true})
+      await axios.post(`${BASE_URL}/cart/add`, {cust_uni: uni || "", product_id: productItem._id, price: productItem.price, quantity: 1}, {withCredentials: true})
                   .then(result => {
-                    console.log(result)
+                    console.log(result.data)
                     if(result.status === 200){
+                      if(!uni){
+                        localStorage.setItem("uni", result.data.uni)
+                      }
                       navigate('/cart')
                     }
                   })
@@ -77,7 +82,7 @@ const Product = (props) => {
           <Image className="w-full h-full" imgSrc={props.img} />
         </div>
         <div className="absolute top-6 left-8">
-          {props.badge && <Badge text="New" />}
+          {props.badge && <Badge text="Baru" />}
         </div>
         <div className="w-full h-32 absolute bg-white -bottom-[130px] group-hover:bottom-0 duration-700">
           <ul className="w-full h-full flex flex-col items-end justify-center gap-2 font-titleFont px-2 border-l border-r">
@@ -106,7 +111,7 @@ const Product = (props) => {
                 }
                 className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full"
               >
-                Add to Cart
+                Tambahkan Ke Keranjang
                 <span>
                   <FaShoppingCart />
                 </span>
@@ -117,7 +122,7 @@ const Product = (props) => {
               onClick={handleProductDetails}
               className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full"
             >
-              View Details
+              Lihat Detail
               <span className="text-lg">
                 <MdOutlineLabelImportant />
               </span>

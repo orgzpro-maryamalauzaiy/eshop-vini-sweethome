@@ -43,7 +43,7 @@ const Shop = () => {
           <ShopSideNav filters={filters} getFilters={getFilters}/>
         </div>
         <div className="w-full mdl:w-[80%] lgl:w-[75%] h-full flex flex-col gap-10">
-          <ProductBanner itemsPerPageFromBanner={itemsPerPageFromBanner} />
+          <ProductBanner itemsPerPageFromBanner={itemsPerPageFromBanner} filters={filters} getFilters={getFilters} />
           <Pagination itemsPerPage={itemsPerPage} filters={filters} />
         </div>
     </div>

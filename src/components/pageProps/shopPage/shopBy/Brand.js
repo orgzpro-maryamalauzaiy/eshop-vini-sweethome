@@ -1,36 +1,47 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import NavTitle from "./NavTitle";
+import { toast } from "react-toastify";
 
 const Brand = ({filters, getFilters}) => {
   const [showBrands, setShowBrands] = useState(true);
   const brands = [
     {
       _id: 9006,
-      title: "Apple",
-      code_model: "homedress1"
+      title: "Homedress",
+      code_model: "homedress"
     },
     {
       _id: 9007,
-      title: "Ultron",
+      title: "Homegown",
       code_model: "homedress2"
     },
     {
       _id: 9008,
-      title: "Unknown",
-      code_model: "homedress3"
+      title: "Hair Ribbon",
+      code_model: "hair-ribbon"
     },
-    {
-      _id: 9009,
-      title: "Shoppers Home",
-      code_model: "homedress3"
-    },
-    {
-      _id: 9010,
-      title: "Hoichoi",
-      code_model: "homedress4"
-    },
+    // {
+    //   _id: 9009,
+    //   title: "Shoppers Home",
+    //   code_model: "homedress3"
+    // },
+    // {
+    //   _id: 9010,
+    //   title: "Hoichoi",
+    //   code_model: "homedress4"
+    // },
   ];
+
+  // const getItemTypes = async () => {
+  //   try {
+
+  //     await axios.get(`${BASE_URL}/product`)
+
+  //   } catch (error) {
+  //     toast.error("Failed, failed to get item types")
+  //   }
+  // }
 
   const handleFilterType = (type) => {
     if(type){

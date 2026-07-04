@@ -37,6 +37,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Cookies from 'js-cookie'
 import { useDispatch, useSelector } from "react-redux";
 import { resetInfo } from "./redux/authSlice";
+import Checkout from "./pages/Checkout/Checkout";
 
 let useruser = ""
 
@@ -176,13 +177,14 @@ function App() {
                 <Route path="/offer" element={<Offer/>}></Route>
                 <Route path="/product/:_id" element={<ProductDetails />}></Route>
                 <Route path="/cart" element={<Cart />}></Route>
+                <Route path="/checkout" element={<Checkout user={userInfo} />} ></Route>
                 <Route path="/profile" element={<Profile />}></Route>
                 <Route path="/order-history" element={<OrderHistory user={useruser} />}></Route>
                 <Route path="/order-history/:id" element={<OrderHistoryDetail user={useruser} />}></Route>
                 <Route path="/forgot-password" element={<ForgotPassword user={useruser}  />}></Route>
-                <Route path="/paymentgateway" element={<Payment user={useruser} />}></Route>
+                <Route path="/payment" element={<Payment user={useruser} />}></Route>
               </Route>
-              <Route path="/register" element={<SignUp user={useruser} />}></Route>
+              <Route path="/register" element={<SignUp user={userInfo} />}></Route>
               <Route path="/login" element={<SignIn user={useruser} />}></Route>
             </Route>
           </Routes>

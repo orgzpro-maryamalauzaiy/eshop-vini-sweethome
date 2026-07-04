@@ -4,7 +4,7 @@ import { BASE_URL } from "../server/api";
 import Cookies from "js-cookie";
 
 const initialState = {
-  userInfo: [],
+  items: [],
   products: [],
 };
 
@@ -44,6 +44,19 @@ export const ecommSlice = createSlice({
         }
       }
     },
+    proceedCheckout: (state, action) => {
+      // const item = state.products.find(
+      //   (item) => item._id === action.payload._id,
+      // );
+      console.log("item", state.products);
+      console.log("payload", action.payload)
+
+      state.products = action.payload
+
+    },
+    resetCheckout: (state, action) => {
+      state.products = null
+    },
     increaseQuantity: (state, action) => {
       const item = state.products.find(
         (item) => item._id === action.payload._id,
@@ -72,12 +85,14 @@ export const ecommSlice = createSlice({
     resetCart: (state) => {
       console.log('state', state.products)
       state.products = [];
-    },
+    }
   },
 });
 
 export const {
   addToCart,
+  proceedCheckout,
+  resetCheckout,
   increaseQuantity,
   decreaseQuantity,
   deleteItem,
