@@ -23,7 +23,7 @@ const NewArrivals = () => {
 
   useEffect(() => {
     getProductsNewArrivals()
-    console.log(new_arrivals)
+    console.log('new_arrivals', new_arrivals)
     console.log('BASE_URL', BASE_URL)
   }, [])
 
@@ -87,12 +87,15 @@ const NewArrivals = () => {
           {/* flex justify-center items-center gap-2 px-2 */}
         {new_arrivals.map(product => (
             <Product
+              key={product.id}
               _id={product.id}
               img={product.image}
               productName={product.name}
+              sku={product.sku}
               slug={product.slug}
               price={product.price}
-              color={product.colors}
+              colors={product.colors}
+              sizes={product.sizes}
               badge={true}
               des={product.description}
               variations={product.variations}

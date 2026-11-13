@@ -175,7 +175,7 @@ function App() {
                 <Route path="/journal" element={<Journal />}></Route>
                 {/* ==================== Header Navlink End here ===================== */}
                 <Route path="/offer" element={<Offer/>}></Route>
-                <Route path="/product/:_id" element={<ProductDetails />}></Route>
+                <Route path="/product/:id" element={<ProductDetails />}></Route>
                 <Route path="/cart" element={<Cart />}></Route>
                 <Route path="/checkout" element={<Checkout user={userInfo} />} ></Route>
                 <Route path="/profile" element={<Profile />}></Route>

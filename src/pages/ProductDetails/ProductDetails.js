@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import Breadcrumbs from "../../components/pageProps/Breadcrumbs";
 import ProductInfo from "../../components/pageProps/productDetails/ProductInfo";
 import ProductsOnSale from "../../components/pageProps/productDetails/ProductsOnSale";
@@ -62,19 +62,28 @@ const ProductDetails = () => {
   const [variations, setVariations] = useState([]);
 
   useEffect(() => {
+    console.log('id -', id)
+    console.log('location.state?.item -', location.state?.item)
+
     if (location.state?.item) {
       const product = location.state.item;
       setProductInfo(product);
+      console.log('productInfo--', productInfo, product)
     }else{
-      getProduct()
+
+      if (id){
+        getProduct(id)
+      }
     }
 
+    console.log('productInfo-', productInfo)
+
     setPrevLocation(location.pathname);
-    setActiveImage(productInfo.img);
+    setActiveImage(productInfo?.img);
 
     // Initialize variations from product data
-    if (productInfo.variations && productInfo.variations.length > 0) {
-      setVariations(productInfo.variations);
+    if (productInfo?.variations && productInfo?.variations.length > 0) {
+      setVariations(productInfo?.variations);
 
       // Extract unique colors with their hex values
       const uniqueColorsMap = new Map();
@@ -128,34 +137,48 @@ const ProductDetails = () => {
       }
     } else {
       // Fallback for products without variations
-      const colors = productInfo.colors?.map(c => {
-        const colorInfo = colorMap[c] || { label: c, hex: "#CCCCCC" };
-        return { value: c, label: colorInfo.label, hex: colorInfo.hex };
-      }) || [];
 
-      const sizes = productInfo.sizes?.map(s => ({
-        value: s,
-        label: sizeLabels[s] || s.toUpperCase()
-      })) || [];
+      console.log('productInfo', productInfo)
 
-      setColorOptions(colors);
-      setSizeOptions(sizes);
+      if (productInfo?.colors != null){
 
-      if (colors.length > 0) setSelectedColor(colors[0].value);
-      if (sizes.length > 0) setSelectedSize(sizes[0].value);
+        const colors = productInfo.colors?.map(c => {
+          const colorInfo = colorMap[c] || { label: c, hex: "#CCCCCC" };
+          return { value: c, label: colorInfo.label, hex: colorInfo.hex };
+        }) || [];
+
+        setColorOptions(colors);
+
+        if (colors.length > 0) setSelectedColor(colors[0].value);
+      }
+
+      if (productInfo?.sizes?.length > 0){
+
+        const sizes = productInfo.sizes.map(s => ({
+          value: s,
+          label: sizeLabels[s] || s.toUpperCase()
+        })) || [];
+
+        setSizeOptions(sizes);
+
+        if (sizes.length > 0) setSelectedSize(sizes[0].value);
+      }
+
     }
 
 
     console.log('variations', variations, productInfo)
-  }, [location]);
+  }, [location, id, productInfo]);
 
-  const getProduct = async () => {
+  const getProduct = async (id) => {
     try {
 
       await axios.get(`${BASE_URL}/products/${id}`)
                   .then(result => {
                     if(result.status == 200){
                       setProductInfo(result.data.data)
+
+                      console.log('productInfo--', productInfo)
                     }
                   })
                   .catch(error => {
@@ -210,20 +233,22 @@ const ProductDetails = () => {
 
   const handleAddToCart = async () => {
     if (variations.length > 0 && !selectedVariation) {
-      alert("Please select color and size");
+      toast.warning("Please select color and size")
+      // alert("Please select color and size");
       return;
     }
 
     const currentStock = selectedVariation?.stock ? parseInt(selectedVariation.stock) : (productInfo?.stock || 0);
 
     if (currentStock <= 0) {
-      alert("Product is out of stock");
+      toast.error("Product is out of stock")
+      // alert("Product is out of stock");
       return;
     }
 
     const cartItem = {
       id: productInfo._id,
-      name: productInfo.name,
+      name: productInfo.productName,
       price: selectedVariation?.price ? parseFloat(selectedVariation.price) : productInfo.price,
       originalPrice: productInfo.originalPrice,
       image: productInfo.img,
@@ -241,13 +266,13 @@ const ProductDetails = () => {
 
     console.log('userEmail', userEmail)
 
-    if(userEmail == null ){
-      console.log('masuk')
-      toast.error("Gagal, Anda belum login.")
-      navigate('/login')
+    // if(userEmail == null ){
+    //   console.log('masuk')
+    //   toast.error("Gagal, Anda belum login.")
+    //   navigate('/login')
 
-      return
-    }else{
+    //   return
+    // }else{
 
       console.log('userEmail', userEmail)
 
@@ -258,8 +283,10 @@ const ProductDetails = () => {
       try {
         await axios.post(`${BASE_URL}/cart/add`, {product_id: cartItem.id, variations: {color: selectedVariation.color, size: selectedVariation.size}, quantity: cartItem.quantity, price: cartItem.price}, {withCredentials: true})
                     .then(result => {
-                      console.log(result)
+                      console.log('result', result)
                       if(result.status === 200){
+
+                        localStorage.setItem('uni', result.data.uni)
 
                         toast.success("Berhasil, Berhasil manambahkan produk ke keranjang.")
                         navigate('/cart')
@@ -273,7 +300,7 @@ const ProductDetails = () => {
       } catch (error) {
         toast.error('Failed, Failed add product to cart: ' + error)
       }
-    }
+    // }
 
 
   };
@@ -313,7 +340,7 @@ const ProductDetails = () => {
               <img
                 className="w-full h-auto object-cover rounded-lg shadow-lg"
                 src={activeImage}
-                alt={productInfo.name}
+                alt={productInfo.productName}
               />
               {/* Thumbnail images if available */}
               {productInfo.gallery && productInfo.gallery.length > 0 && (
@@ -342,7 +369,7 @@ const ProductDetails = () => {
           <div className="h-full w-full flex flex-col gap-6">
             {/* Product Title */}
             <div>
-              <h1 className="text-3xl font-bold text-gray-800">{productInfo.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-800">{productInfo.productName}</h1>
               {getCurrentSku() && (
                 <p className="text-sm text-gray-500 mt-1">SKU: {getCurrentSku()}</p>
               )}
@@ -454,9 +481,9 @@ const ProductDetails = () => {
 
             {/* Stock Status */}
             <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${getCurrentStock() > 0 ? "bg-green-500" : "bg-red-500"}`} />
+              {/* <div className={`w-2 h-2 rounded-full ${getCurrentStock() > 0 ? "bg-green-500" : "bg-red-500"}`} /> */}
               <span className="text-sm font-medium">
-                {getCurrentStock() > 0 ? `In Stock (${getCurrentStock()} available)` : "Out of Stock"}
+                {getCurrentStock() > 0 ? `In Stock (${getCurrentStock()})` : "Out of Stock"}
               </span>
             </div>
 
@@ -486,7 +513,7 @@ const ProductDetails = () => {
                     +
                   </button>
                   <span className="text-sm text-gray-500 ml-2">
-                    Max {getCurrentStock()} available
+                    Max {getCurrentStock()} items
                   </span>
                 </div>
               </div>
@@ -546,7 +573,7 @@ const ProductDetails = () => {
 
         {/* Related Products Section */}
         <div className="mt-8">
-          <ProductsOnSale />
+          {/* <ProductsOnSale /> */}
         </div>
       </div>
     </div>
@@ -669,7 +696,7 @@ export default ProductDetails;
 
 //     const cartItem = {
 //       id: productInfo.id,
-//       name: productInfo.name,
+//       name: productInfo.productName,
 //       price: selectedVariation?.price || productInfo.price,
 //       originalPrice: productInfo.originalPrice,
 //       image: productInfo.img,
@@ -711,7 +738,7 @@ export default ProductDetails;
 //               <img
 //                 className="w-full h-auto object-cover rounded-lg shadow-lg"
 //                 src={activeImage}
-//                 alt={productInfo.name}
+//                 alt={productInfo.productName}
 //               />
 //               {/* Thumbnail images if available */}
 //               {productInfo.gallery && productInfo.gallery.length > 0 && (
@@ -740,7 +767,7 @@ export default ProductDetails;
 //           <div className="h-full w-full flex flex-col gap-6">
 //             {/* Product Title */}
 //             <div>
-//               <h1 className="text-3xl font-bold text-gray-800">{productInfo.name}</h1>
+//               <h1 className="text-3xl font-bold text-gray-800">{productInfo.productName}</h1>
 //               {getCurrentSku() && (
 //                 <p className="text-sm text-gray-500 mt-1">SKU: {getCurrentSku()}</p>
 //               )}

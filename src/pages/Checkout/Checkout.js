@@ -5,6 +5,7 @@ import Breadcrumbs from "../../components/pageProps/Breadcrumbs";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
+import { useGetProvincesQuery, useGetCitiesQuery, useGetServicesQuery } from "../../redux/shippingSlice";
 import { resetCheckout } from "../../redux/ecommSlice";
 import Cookies from 'js-cookie'
 
@@ -23,8 +24,19 @@ const Checkout = () => {
   const [timeLeft, setTimeLeft] = useState("")
   const [countdown, setCountDown] = useState(localStorage.getItem('countdown') || 0)
 
+  const [province, setProvince] = useState("")
+  const [city, setCity] = useState("")
+  const [courier, setCourier] = useState("")
+  const [service, setService] = useState("")
+  const [address, setAddress] = useState("")
+
+
   const token = Cookies.get('token')
   const [uni, setUni] = useState(localStorage.getItem('uni') || "")
+
+  // const { data: provinces} = useGetProvincesQuery()
+  // const { data: cities} = useGetCitiesQuery(province, {skip: !province})
+  const { data: servicesData} = useGetServicesQuery({origin, destination: city, weight: products?.weight, courier}, {skip: !city || !courier})
 
   // ========== User Profile Data ==========
   const [customer, setCustomer] = useState({
@@ -42,6 +54,7 @@ const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
+  // const services = servicesData[0]?.cost?? 0
 
   // ========== Shipping & Payment ==========
   const [shippingMethod, setShippingMethod] = useState("standard");

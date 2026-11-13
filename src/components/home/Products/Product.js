@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { BsSuitHeartFill } from "react-icons/bs";
 import { GiReturnArrow } from "react-icons/gi";
 import { FaShoppingCart } from "react-icons/fa";
@@ -27,12 +27,18 @@ const Product = (props) => {
   };
   const rootId = idString(_id);
 
+  useEffect(() => {
+
+    console.log('_id', _id)
+
+  }, [_id])
+
   const navigate = useNavigate();
   const [uni, setUni] = useState(localStorage.getItem('uni') || "")
   const productItem = props;
 
   const handleProductDetails = () => {
-    navigate(`/product/${rootId}`, {
+    navigate(`/product/${_id}`, {
       state: {
         item: productItem,
       },

@@ -48,12 +48,15 @@ const BestSellers = () => {
       <div className="w-full grid grid-cols-1 md:grid-cols-2 lgl:grid-cols-3 xl:grid-cols-4 gap-10">
         {bestsellers && bestsellers.map(product => (
           <Product
+            key={product.id}
             _id={product.id}
             img={product.image}
             productName={product.name}
+            sku={product.sku}
             slug={product.slug}
             price={product.price}
-            color={product.color}
+            colors={product.colors}
+            sizes={product.sizes}
             badge={true}
             des={product.description}
             variations={product.variations}

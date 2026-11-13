@@ -42,6 +42,7 @@ const Pagination = ({ itemsPerPage, filters }) => {
     getProducts();
 
     console.log('products', products)
+    console.log('filters', filters)
   }, [filters]); // Only depend on filters, not products
 
   const getProducts = async () => {

@@ -62,11 +62,12 @@ const ProductBanner = ({ itemsPerPageFromBanner, filters, getFilters }) => {
           <label className="block">Sort by:</label>
           <select
             onChange={(e) => setSelected(e.target.value)}
-            id="countries"
+            id="type"
             className="w-32 md:w-52 border-[1px] border-gray-200 py-1 px-4 cursor-pointer text-primeColor text-base block dark:placeholder-gray-400 appearance-none focus-within:outline-none focus-visible:border-primeColor"
           >
-            <option value="best-seller">Best Sellers</option>
-            <option value="new-arrival">New Arrival</option>
+            <option value="bestseller">Best Sellers</option>
+            <option value="newarrivals">New Arrival</option>
+            <option value="special-offer">Special Offer</option>
             <option value="discount">Discount</option>
             {/* <option value="Final Offer">Final Offer</option> */}
           </select>

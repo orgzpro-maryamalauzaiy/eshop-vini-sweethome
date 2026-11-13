@@ -45,7 +45,7 @@ const Shop = () => {
         <div className="w-full mdl:w-[80%] lgl:w-[75%] h-full flex flex-col gap-10">
           <ProductBanner itemsPerPageFromBanner={itemsPerPageFromBanner} filters={filters} getFilters={getFilters} />
           <Pagination itemsPerPage={itemsPerPage} filters={filters} />
-        </div>
+      </div>
     </div>
       {/* ================= Products End here ===================== */}
     </div>

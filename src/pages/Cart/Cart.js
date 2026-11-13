@@ -30,7 +30,7 @@ const Cart = () => {
 
   useEffect(() => {
 
-    if(products.length === 0 && (userEmail !== null || uni)){
+    if(products.length == 0 && (userEmail !== null || uni)){
       getCart()
     }
 

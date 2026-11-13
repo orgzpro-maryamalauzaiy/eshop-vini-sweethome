@@ -16,6 +16,7 @@ const BASE_URL = process.env.REACT_APP_SERVER_MODE === 'development' ? process.e
 const ItemCard = ({ item, setIncrease, setDecrease, setRemove }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
+  const cust_uni = localStorage.getItem("uni")
 
   useEffect(() => {
 
@@ -24,7 +25,9 @@ const ItemCard = ({ item, setIncrease, setDecrease, setRemove }) => {
 
   const handleRemoveItem = async (product_id) => {
     try {
-      await axios.post(`${BASE_URL}/cart/remove`, {product_id}, {withCredentials: true})
+      if(cust_uni){
+
+        await axios.post(`${BASE_URL}/cart/remove`, {product_id, cust_uni})
                   .then(result => {
                     console.log(result)
                     if(result.status === 200){
@@ -38,6 +41,24 @@ const ItemCard = ({ item, setIncrease, setDecrease, setRemove }) => {
                     toast.error('Failed, Failed remove product from cart: ' + error)
                   })
 
+      }else{
+
+        await axios.post(`${BASE_URL}/cart/remove`, {product_id}, { withCredentials: true})
+                  .then(result => {
+                    console.log(result)
+                    if(result.status === 200){
+                      setRemove({product_id})
+                      // setDecrease(product_id)
+                      // navigate('/cart')
+                    }
+                  })
+                  .catch(error => {
+                    console.log(error)
+                    toast.error('Failed, Failed remove product from cart: ' + error)
+                  })
+
+      }
+
     } catch (error) {
       toast.error('Failed, Failed remove product from cart: ' + error)
     }
@@ -45,18 +66,39 @@ const ItemCard = ({ item, setIncrease, setDecrease, setRemove }) => {
 
   const handleIncreaseQuantity = async (product_id) => {
     try {
-      await axios.post(`${BASE_URL}/cart/increase`, {product_id}, {withCredentials: true})
-                  .then(result => {
-                    console.log(result)
-                    if(result.status === 200){
-                      setIncrease({product_id})
-                      // navigate('/cart')
-                    }
-                  })
-                  .catch(error => {
-                    console.log(error)
-                    toast.error('Failed, Failed add product to cart: ' + error)
-                  })
+      if(cust_uni){
+
+        console.log('cust_uni', cust_uni)
+
+        await axios.post(`${BASE_URL}/cart/increase`, {product_id, cust_uni})
+                    .then(result => {
+                      console.log(result)
+                      if(result.status === 200){
+                        setIncrease({product_id})
+                        // navigate('/cart')
+                      }
+                    })
+                    .catch(error => {
+                      console.log(error)
+                      toast.error('Failed, Failed add product to cart: ' + error)
+                    })
+
+      }else{
+
+        await axios.post(`${BASE_URL}/cart/increase`, {product_id}, {withCredentials:true})
+                    .then(result => {
+                      console.log(result)
+                      if(result.status === 200){
+                        setIncrease({product_id})
+                        // navigate('/cart')
+                      }
+                    })
+                    .catch(error => {
+                      console.log(error)
+                      toast.error('Failed, Failed add product to cart: ' + error)
+                    })
+
+      }
 
     } catch (error) {
       toast.error('Failed, Failed add product to cart: ' + error)
@@ -64,7 +106,9 @@ const ItemCard = ({ item, setIncrease, setDecrease, setRemove }) => {
   }
   const handleDecreaseQuantity = async (product_id) => {
     try {
-      await axios.post(`${BASE_URL}/cart/decrease`, {product_id}, {withCredentials: true})
+      if(cust_uni){
+
+        await axios.post(`${BASE_URL}/cart/decrease`, {product_id, cust_uni})
                   .then(result => {
                     console.log(result)
                     if(result.status === 200){
@@ -76,6 +120,23 @@ const ItemCard = ({ item, setIncrease, setDecrease, setRemove }) => {
                     console.log(error)
                     toast.error('Failed, Failed add product to cart: ' + error)
                   })
+
+      }else{
+
+        await axios.post(`${BASE_URL}/cart/decrease`, {product_id}, {withCredentials: true})
+                  .then(result => {
+                    console.log(result)
+                    if(result.status === 200){
+                      setDecrease({product_id})
+                      // navigate('/cart')
+                    }
+                  })
+                  .catch(error => {
+                    console.log(error)
+                    toast.error('Failed, Failed add product to cart: ' + error)
+                  })
+
+      }
 
     } catch (error) {
       toast.error('Failed, Failed add product to cart: ' + error)
