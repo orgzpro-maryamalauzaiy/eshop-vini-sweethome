@@ -5,6 +5,7 @@ export const shippingApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.REACT_APP_SHIPPING_COST_API}`,
     credentials: "include",
+    headers: `key: ${process.env.REACT_APP_SHIPPING_COST_API_KEY}`
   }),
   endpoints: (builder) => ({
     getProvinces: builder.query ({
