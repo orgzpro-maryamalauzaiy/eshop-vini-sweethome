@@ -573,7 +573,7 @@ const ProductDetails = () => {
 
         {/* Related Products Section */}
         <div className="mt-8">
-          {/* <ProductsOnSale /> */}
+          <ProductsOnSale product={productInfo._id} />
         </div>
       </div>
     </div>

@@ -36,7 +36,7 @@ const Checkout = () => {
 
   // const { data: provinces} = useGetProvincesQuery()
   // const { data: cities} = useGetCitiesQuery(province, {skip: !province})
-  const { data: servicesData} = useGetServicesQuery({origin, destination: city, weight: products?.weight, courier}, {skip: !city || !courier})
+  // const { data: servicesData} = useGetServicesQuery({origin, destination: city, weight: products?.weight, courier}, {skip: !city || !courier})
 
   // ========== User Profile Data ==========
   const [customer, setCustomer] = useState({
@@ -52,6 +52,7 @@ const Checkout = () => {
 
   // ========== Cart & Order Data ==========
   const [cartItems, setCartItems] = useState([]);
+  const [provinces, setProvinces] = useState([]);
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
   // const services = servicesData[0]?.cost?? 0
@@ -172,7 +173,29 @@ const Checkout = () => {
 
     // }
 
+    // getProvinces()
+
+
   }, [countdown])
+
+  const getProvinces = async () => {
+    try {
+      await axios.get(`${BASE_URL}/shippings/provinces`)
+                                .then(result => {
+                                  if(result.status == 200){
+                                    setProvinces(result.data.data)
+                                  }
+                                })
+                                .catch(error =>
+                                {
+                                  toast.error('Failed to load provinces: ', error);
+                                }
+                                );
+
+    } catch (error) {
+      toast.error('Failed to load cities: ' + (error.response?.data?.message || error.message));
+    }
+  }
 
 
   const getCustomer = async () => {
@@ -248,6 +271,22 @@ const Checkout = () => {
       ...prev,
       [field]: ""
     }));
+  };
+
+  const handleProvinceChange = (province_id) => {
+    const province = provinces.find(c => c.id === province_id);
+    setSelectedCity(province);
+    getCities({province_id})
+    setCustomer(prev => ({
+      ...prev,
+      province_id: province_id
+    }));
+    setErrors(prev => ({
+      ...prev,
+      province_id: ""
+    }));
+
+    console.log('provinces', province_id)
   };
 
   const handleCityChange = (cityId) => {
@@ -365,8 +404,11 @@ const Checkout = () => {
                         },
                         onPending: function(result){
                           console.log('pending');console.log(result);
-                          toast.info('Navigating to order history')
-                          navigate('/order-history')
+                          toast.info('Navigating...')
+                          if(!uni){
+                            navigate('/order-history')
+                          }
+                          navigate('/')
                         },
                         onError: function(result){
                           console.log('error');console.log(result);
@@ -374,7 +416,11 @@ const Checkout = () => {
                         },
                         onClose: function(){
                           console.log('customer closed the popup without finishing the payment');
-                          navigate('/order-history')
+                          toast.info('Navigating...')
+                          if(!uni){
+                            navigate('/order-history')
+                          }
+                          navigate('/')
                         }
                       })
                     }
@@ -500,6 +546,49 @@ const Checkout = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Negara
+                      </label>
+                      <input
+                        type="text"
+                        value={customer.country || ""}
+                        onChange={(e) => handleInputChange('country', e.target.value)}
+                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primeColor focus:border-transparent outline-none"
+                        placeholder="Country"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Provinsi
+                      </label>
+                      {/* <select
+                        value={customer.province_id || ""}
+                        onChange={(e) => handleCityChange(e.target.value)}
+                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primeColor focus:border-transparent outline-none"
+                      >
+                        <option value="">Select a Province</option>
+                        {provinces.map(city => (
+                          <option key={province.id} value={province.id}>
+                            {province.name}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.province_id && (
+                        <p className="text-red-500 text-sm mt-1">{errors.province_id}</p>
+                      )} */}
+                      <input
+                        type="text"
+                        value={customer.province || ""}
+                        onChange={(e) => handleInputChange('province', e.target.value)}
+                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primeColor focus:border-transparent outline-none"
+                        placeholder="Province"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Province and Country */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         Kota *
                       </label>
                       <select
@@ -532,34 +621,6 @@ const Checkout = () => {
                       {errors.zip && (
                         <p className="text-red-500 text-sm mt-1">{errors.zip}</p>
                       )}
-                    </div>
-                  </div>
-
-                  {/* Province and Country */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Provinsi
-                      </label>
-                      <input
-                        type="text"
-                        value={customer.province || ""}
-                        onChange={(e) => handleInputChange('province', e.target.value)}
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primeColor focus:border-transparent outline-none"
-                        placeholder="Province"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Negara
-                      </label>
-                      <input
-                        type="text"
-                        value={customer.country || ""}
-                        onChange={(e) => handleInputChange('country', e.target.value)}
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primeColor focus:border-transparent outline-none"
-                        placeholder="Country"
-                      />
                     </div>
                   </div>
                 </div>
